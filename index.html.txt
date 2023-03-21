@@ -1,0 +1,19 @@
+!DOCTYPE html
+html
+head
+	titlePágina verde con texto negrotitle
+	style
+		body {
+			background-color green;  Fondo verde 
+		}
+		h1 {
+			color black;  Texto negro 
+			text-align center;  Centrado 
+			margin-top 40vh;  Centrado vertical 
+		}
+	style
+head
+body
+	h1Holah1
+body
+html
