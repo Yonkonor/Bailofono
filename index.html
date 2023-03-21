@@ -22,7 +22,9 @@
     <p id="y">Componente Y: </p>
     <p id="z">Componente Z: </p>
     
-    <audio id="audio" src="nota_La.mp3"></audio> <!-- Agregamos el elemento de audio -->
+    <audio id="audio" src="nota_La.mp3"></audio>
+    
+    <button id="playButton">Reproducir</button> <!-- Agregamos el botón de reproducción -->
 
     <script>
       window.addEventListener("devicemotion", function(event) {
@@ -31,9 +33,13 @@
         document.getElementById("y").innerHTML = "Componente Y: " + acceleration.y.toFixed(2);
         document.getElementById("z").innerHTML = "Componente Z: " + acceleration.z.toFixed(2);
         
-        if (acceleration.z < 0) { // Si la componente "z" es negativa, reproducimos el archivo de audio
+        if (acceleration.z < 0) {
           document.getElementById("audio").play();
         }
+      });
+      
+      document.getElementById("playButton").addEventListener("click", function() { // Agregamos el controlador de eventos para el botón de reproducción
+        document.getElementById("audio").play();
       });
     </script>
   </body>
