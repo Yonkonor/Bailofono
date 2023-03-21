@@ -1,76 +1,40 @@
 <!DOCTYPE html>
 <html>
-<head>
-	<title>Aplicación en pantalla completa</title>
-	<style>
-		body {
-			margin: 0;
-			padding: 0;
-			background-color: green;
-		}
+  <head>
+    <title>PÃ¡gina con cuadrado blanco que se mueve en Android</title>
+    <style>
+      body {
+        background-color: green;
+        margin: 0;
+        padding: 0;
+      }
+    </style>
+  </head>
+  <body>
+    <div id="cuadrado" style="background-color: white; width: 50px; height: 50px; position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);"></div>
+    <script>
+      var cuadrado = document.getElementById("cuadrado");
+      var xInicial = null;
+      var yInicial = null;
+      var xActual = null;
+      var yActual = null;
 
-		#rectangle {
-			position: absolute;
-			top: 50%;
-			left: 50%;
-			transform: translate(-35px, -35px);
-			width: 50px;
-			height: 200px;
-			background-color: white;
-			z-index: 0; /* Establece el cuadrado blanco detrás del botón */
-		}
+      cuadrado.addEventListener("touchstart", function(event) {
+        xInicial = event.touches[0].clientX;
+        yInicial = event.touches[0].clientY;
+      });
 
-		#button {
-			position: absolute;
-			top: 0;
-			left: 0;
-			background-color: red;
-			width: 50px;
-			height: 50px;
-			border: none;
-			cursor: pointer;
-			z-index: 1; /* Asegura que el botón esté por encima del cuadrado blanco */
-		}
-
-		#button:active {
-			background-color: blue;
-		}
-	</style>
-</head>
-<body>
-	<div id="rectangle">
-		<button id="button"></button>
-	</div>
-	<script>
-		var rectangle = document.getElementById("rectangle");
-		var button = document.getElementById("button");
-
-		window.addEventListener("mousemove", function(event) {
-			var rectangleCoords = rectangle.getBoundingClientRect();
-			var x = event.clientX - rectangleCoords.left - button.offsetWidth / 2;
-			var y = event.clientY - rectangleCoords.top - button.offsetHeight / 2;
-
-			x = Math.max(0, Math.min(x, rectangle.offsetWidth - button.offsetWidth));
-			y = Math.max(0, Math.min(y, rectangle.offsetHeight - button.offsetHeight));
-
-			button.style.left = x + "px";
-			button.style.top = y + "px";
-		});
-
-		window.addEventListener("resize", function() {
-			button.style.left = rectangle.offsetWidth / 2 - button.offsetWidth / 2 + "px";
-			button.style.top = rectangle.offsetHeight / 2 - button.offsetHeight / 2 + "px";
-		});
-
-		window.addEventListener("load", function() {
-			button.style.left = rectangle.offsetWidth / 2 - button.offsetWidth / 2 + "px";
-			button.style.top = rectangle.offsetHeight / 2 - button.offsetHeight / 2 + "px";
-		});
-
-		window.addEventListener("fullscreenchange", function() {
-			button.style.left = rectangle.offsetWidth / 2 - button.offsetWidth / 2 + "px";
-			button.style.top = rectangle.offsetHeight / 2 - button.offsetHeight / 2 + "px";
-		});
-	</script>
-</body>
+      cuadrado.addEventListener("touchmove", function(event) {
+        event.preventDefault();
+        xActual = event.touches[0].clientX;
+        yActual = event.touches[0].clientY;
+        var xOffset = xActual - xInicial;
+        var yOffset = yActual - yInicial;
+        cuadrado.style.left = (cuadrado.offsetLeft + xOffset) + "px";
+        cuadrado.style.top = (cuadrado.offsetTop + yOffset) + "px";
+        xInicial = xActual;
+        yInicial = yActual;
+      });
+    </script>
+  </body>
 </html>
