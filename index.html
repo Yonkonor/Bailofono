@@ -1,106 +1,45 @@
 <!DOCTYPE html>
 <html>
 <head>
-	<meta name="viewport" content="width=device-width, initial-scale=1">
-	<title>Sonido Sintético</title>
-	<style>
-		#slider {
-			width: 80%;
-			height: 50px;
-			position: relative;
-			margin: 0 auto;
-			background-color: #f1f1f1;
-		}
-
-		#slider button {
-			position: absolute;
-			top: 0;
-			height: 100%;
-			background-color: #2196F3;
-			cursor: grab;
-			z-index: 1;
-		}
-
-		#slider button:active {
-			cursor: grabbing;
-		}
-
-		#output {
-			margin-top: 20px;
-			text-align: center;
-		}
-	</style>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Sintetizador de Sonidos</title>
+  <style>
+    #range-slider {
+      position: absolute;
+      top: 70px;
+      left: 10%;
+      width: 80%;
+    }
+  </style>
 </head>
 <body>
-
-	<div id="slider">
-		<button id="sliderButton"></button>
-	</div>
-
-	<div id="output">Frecuencia: 440 Hz</div>
-
-	<button id="toggleButton">Encender sonido</button>
-
-	<script>
-		window.AudioContext = window.AudioContext || window.webkitAudioContext;
-		var context = new AudioContext();
-		var oscillator = context.createOscillator();
-		var gainNode = context.createGain();
-
-		oscillator.type = 'sine';
-		oscillator.frequency.value = 440;
-		gainNode.gain.value = 0.5;
-
-		oscillator.connect(gainNode);
-		gainNode.connect(context.destination);
-
-		var sliderButton = document.getElementById('sliderButton');
-		var slider = document.getElementById('slider');
-		var output = document.getElementById('output');
-
-		var sliderWidth = slider.offsetWidth;
-		var sliderButtonWidth = sliderButton.offsetWidth;
-		var maxFrequency = 2000;
-		var minFrequency = 200;
-
-		function moveSlider(event) {
-			event.preventDefault();
-			var posX = event.clientX - slider.offsetLeft - (sliderButtonWidth / 2);
-			if (posX < 0) {
-				posX = 0;
-			} else if (posX > sliderWidth - sliderButtonWidth) {
-				posX = sliderWidth - sliderButtonWidth;
-			}
-			var frequency = (posX / sliderWidth) * (maxFrequency - minFrequency) + minFrequency;
-			oscillator.frequency.value = frequency;
-			output.innerHTML = 'Frecuencia: ' + frequency.toFixed(2) + ' Hz';
-			sliderButton.style.left = posX + 'px';
-		}
-
-		slider.addEventListener('mousedown', function(event) {
-			moveSlider(event);
-			document.addEventListener('mousemove', moveSlider);
-		});
-
-		document.addEventListener('mouseup', function(event) {
-			document.removeEventListener('mousemove', moveSlider);
-		});
-
-		var toggleButton = document.getElementById('toggleButton');
-		toggleButton.addEventListener('click', function() {
-			if (context.state === 'suspended') {
-				context.resume();
-			}
-			if (toggleButton.innerHTML === 'Encender sonido') {
-				oscillator.start();
-				toggleButton.innerHTML = 'Apagar sonido';
-			} else {
-				oscillator.stop();
-				toggleButton.innerHTML = 'Encender sonido';
-			}
-		});
-
-	</script>
-
+  <h1>Sintetizador de Sonidos</h1>
+  <button id="on-off-button">Encender</button>
+  <div id="range-slider">
+    <input type="range" id="frequency-slider" min="200" max="2000" value="1000">
+  </div>
+  <script>
+    const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+    const oscillator = audioCtx.createOscillator();
+    oscillator.type = 'sine';
+    oscillator.frequency.setValueAtTime(1000, audioCtx.currentTime);
+    oscillator.start();
+    let isPlaying = true;
+    document.getElementById('on-off-button').addEventListener('click', () => {
+      isPlaying = !isPlaying;
+      if (isPlaying) {
+        oscillator.connect(audioCtx.destination);
+        document.getElementById('on-off-button').textContent = 'Apagar';
+      } else {
+        oscillator.disconnect(audioCtx.destination);
+        document.getElementById('on-off-button').textContent = 'Encender';
+      }
+    });
+    document.getElementById('frequency-slider').addEventListener('input', (event) => {
+      const frequency = event.target.value;
+      oscillator.frequency.setValueAtTime(frequency, audioCtx.currentTime);
+    });
+  </script>
 </body>
 </html>
