@@ -25,9 +25,9 @@
     <script>
       window.addEventListener("devicemotion", function(event) {
         var acceleration = event.accelerationIncludingGravity;
-        document.getElementById("x").innerHTML += acceleration.x.toFixed(2);
-        document.getElementById("y").innerHTML += acceleration.y.toFixed(2);
-        document.getElementById("z").innerHTML += acceleration.z.toFixed(2);
+        document.getElementById("x").innerHTML = "Componente X: " + acceleration.x.toFixed(2);
+        document.getElementById("y").innerHTML = "Componente Y: " + acceleration.y.toFixed(2);
+        document.getElementById("z").innerHTML = "Componente Z: " + acceleration.z.toFixed(2);
       });
     </script>
   </body>
