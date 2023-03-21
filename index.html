@@ -1,40 +1,27 @@
 <!DOCTYPE html>
 <html>
   <head>
-    <title>Página con cuadrado blanco que se mueve en Android</title>
-    <style>
-      body {
-        background-color: green;
-        margin: 0;
-        padding: 0;
-      }
-    </style>
+    <meta charset="UTF-8">
+    <title>Valores del acelerómetro</title>
   </head>
   <body>
-    <div id="cuadrado" style="background-color: white; width: 50px; height: 50px; position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);"></div>
+    <h1>Valores del acelerómetro</h1>
+    <p>X: <span id="acelerometro-x"></span></p>
+    <p>Y: <span id="acelerometro-y"></span></p>
+    <p>Z: <span id="acelerometro-z"></span></p>
     <script>
-      var cuadrado = document.getElementById("cuadrado");
-      var xInicial = null;
-      var yInicial = null;
-      var xActual = null;
-      var yActual = null;
-
-      cuadrado.addEventListener("touchstart", function(event) {
-        xInicial = event.touches[0].clientX;
-        yInicial = event.touches[0].clientY;
-      });
-
-      cuadrado.addEventListener("touchmove", function(event) {
-        event.preventDefault();
-        xActual = event.touches[0].clientX;
-        yActual = event.touches[0].clientY;
-        var xOffset = xActual - xInicial;
-        var yOffset = yActual - yInicial;
-        cuadrado.style.left = (cuadrado.offsetLeft + xOffset) + "px";
-        cuadrado.style.top = (cuadrado.offsetTop + yOffset) + "px";
-        xInicial = xActual;
-        yInicial = yActual;
-      });
+      if ('DeviceOrientationEvent' in window) {
+        window.addEventListener('deviceorientation', function(event) {
+          var accelerationX = event.accelerationIncludingGravity.x;
+          var accelerationY = event.accelerationIncludingGravity.y;
+          var accelerationZ = event.accelerationIncludingGravity.z;
+          document.getElementById('acelerometro-x').textContent = accelerationX;
+          document.getElementById('acelerometro-y').textContent = accelerationY;
+          document.getElementById('acelerometro-z').textContent = accelerationZ;
+        });
+      } else {
+        console.log('Tu navegador no soporta la API de sensores');
+      }
     </script>
   </body>
 </html>
