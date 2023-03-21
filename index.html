@@ -5,7 +5,7 @@
 	<title>Sonido Sintético</title>
 	<style>
 		#slider {
-			width: 100%;
+			width: 80%;
 			height: 50px;
 			position: relative;
 			background-color: #f1f1f1;
@@ -58,8 +58,8 @@
 
 		var sliderWidth = slider.offsetWidth;
 		var sliderButtonWidth = sliderButton.offsetWidth;
-		var maxFrequency = 20000;
-		var minFrequency = 20;
+		var maxFrequency = 2000;
+		var minFrequency = 200;
 
 		function moveSlider(event) {
 			event.preventDefault();
@@ -75,8 +75,8 @@
 			sliderButton.style.left = posX + 'px';
 		}
 
-		sliderButton.addEventListener('mousedown', function(event) {
-			event.preventDefault();
+		slider.addEventListener('mousedown', function(event) {
+			moveSlider(event);
 			document.addEventListener('mousemove', moveSlider);
 		});
 
