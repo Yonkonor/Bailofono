@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>Aplicación en pantalla completa</title>
+	<style>
+		body {
+			margin: 0;
+			padding: 0;
+			background-color: green;
+		}
+
+		#rectangle {
+			position: absolute;
+			top: 50%;
+			left: 50%;
+			transform: translate(-35px, -35px);
+			width: 50px;
+			height: 200px;
+			background-color: white;
+			z-index: 0; /* Establece el cuadrado blanco detrás del botón */
+		}
+
+		#button {
+			position: absolute;
+			top: 0;
+			left: 0;
+			background-color: red;
+			width: 50px;
+			height: 50px;
+			border: none;
+			cursor: pointer;
+			z-index: 1; /* Asegura que el botón esté por encima del cuadrado blanco */
+		}
+
+		#button:active {
+			background-color: blue;
+		}
+	</style>
+</head>
+<body>
+	<div id="rectangle">
+		<button id="button"></button>
+	</div>
+	<script>
+		var rectangle = document.getElementById("rectangle");
+		var button = document.getElementById("button");
+
+		window.addEventListener("mousemove", function(event) {
+			var rectangleCoords = rectangle.getBoundingClientRect();
+			var x = event.clientX - rectangleCoords.left - button.offsetWidth / 2;
+			var y = event.clientY - rectangleCoords.top - button.offsetHeight / 2;
+
+			x = Math.max(0, Math.min(x, rectangle.offsetWidth - button.offsetWidth));
+			y = Math.max(0, Math.min(y, rectangle.offsetHeight - button.offsetHeight));
+
+			button.style.left = x + "px";
+			button.style.top = y + "px";
+		});
+
+		window.addEventListener("resize", function() {
+			button.style.left = rectangle.offsetWidth / 2 - button.offsetWidth / 2 + "px";
+			button.style.top = rectangle.offsetHeight / 2 - button.offsetHeight / 2 + "px";
+		});
+
+		window.addEventListener("load", function() {
+			button.style.left = rectangle.offsetWidth / 2 - button.offsetWidth / 2 + "px";
+			button.style.top = rectangle.offsetHeight / 2 - button.offsetHeight / 2 + "px";
+		});
+
+		window.addEventListener("fullscreenchange", function() {
+			button.style.left = rectangle.offsetWidth / 2 - button.offsetWidth / 2 + "px";
+			button.style.top = rectangle.offsetHeight / 2 - button.offsetHeight / 2 + "px";
+		});
+	</script>
+</body>
+</html>
