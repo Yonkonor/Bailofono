@@ -1,45 +1,105 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Sintetizador de Sonidos</title>
-  <style>
-    #range-slider {
-      position: absolute;
-      top: 70px;
-      left: 10%;
-      width: 80%;
-    }
-  </style>
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<title>Sintetizador de sonido</title>
+	<style>
+		#container {
+			display: flex;
+			flex-direction: column;
+			align-items: center;
+			margin-top: 70px;
+		}
+
+		#slider {
+			width: 80%;
+			height: 20px;
+			margin-bottom: 20px;
+			position: relative;
+			background-color: #ccc;
+			border-radius: 10px;
+		}
+
+		#knob {
+			width: 30px;
+			height: 30px;
+			background-color: #fff;
+			border-radius: 50%;
+			position: absolute;
+			top: -5px;
+			left: 50%;
+			transform: translateX(-50%);
+			cursor: pointer;
+		}
+
+		#onoff {
+			padding: 10px;
+			background-color: #4CAF50;
+			color: #fff;
+			border: none;
+			border-radius: 5px;
+			cursor: pointer;
+		}
+	</style>
 </head>
 <body>
-  <h1>Sintetizador de Sonidos</h1>
-  <button id="on-off-button">Encender</button>
-  <div id="range-slider">
-    <input type="range" id="frequency-slider" min="200" max="2000" value="1000">
-  </div>
-  <script>
-    const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-    const oscillator = audioCtx.createOscillator();
-    oscillator.type = 'sine';
-    oscillator.frequency.setValueAtTime(1000, audioCtx.currentTime);
-    oscillator.start();
-    let isPlaying = true;
-    document.getElementById('on-off-button').addEventListener('click', () => {
-      isPlaying = !isPlaying;
-      if (isPlaying) {
-        oscillator.connect(audioCtx.destination);
-        document.getElementById('on-off-button').textContent = 'Apagar';
-      } else {
-        oscillator.disconnect(audioCtx.destination);
-        document.getElementById('on-off-button').textContent = 'Encender';
-      }
-    });
-    document.getElementById('frequency-slider').addEventListener('input', (event) => {
-      const frequency = event.target.value;
-      oscillator.frequency.setValueAtTime(frequency, audioCtx.currentTime);
-    });
-  </script>
+	<div id="container">
+		<div id="slider">
+			<div id="knob"></div>
+		</div>
+		<button id="onoff">Encender</button>
+	</div>
+	<script>
+		const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+		const oscillator = audioCtx.createOscillator();
+		const gainNode = audioCtx.createGain();
+		oscillator.connect(gainNode);
+		gainNode.connect(audioCtx.destination);
+		oscillator.type = 'sine';
+		oscillator.start();
+
+		const slider = document.getElementById('slider');
+		const knob = document.getElementById('knob');
+		const onoff = document.getElementById('onoff');
+		const minFreq = 200;
+		const maxFreq = 2000;
+		let isOn = false;
+
+		function setFrequency() {
+			const sliderWidth = slider.clientWidth;
+			const knobPosition = knob.offsetLeft;
+			const frequency = (knobPosition / sliderWidth) * (maxFreq - minFreq) + minFreq;
+			oscillator.frequency.value = frequency;
+		}
+
+		function toggleOnOff() {
+			isOn = !isOn;
+			if (isOn) {
+				gainNode.gain.value = 0.5;
+				onoff.textContent = 'Apagar';
+			} else {
+				gainNode.gain.value = 0;
+				onoff.textContent = 'Encender';
+			}
+		}
+
+		knob.addEventListener('touchmove', function(event) {
+			event.preventDefault();
+			const sliderRect = slider.getBoundingClientRect();
+			const touchX = event.targetTouches[0].clientX - sliderRect.left;
+			const knobWidth = knob.offsetWidth;
+			const maxKnobPosition = slider.clientWidth - knobWidth;
+			let knobPosition = touchX - knobWidth / 2;
+			if (knobPosition < 0) {
+				knobPosition = 0;
+			} else if (knobPosition > maxKnobPosition) {
+				knobPosition = maxKnobPosition;
+			}
+			knob.style.left = knobPosition + 'px';
+			setFrequency();
+		});
+
+		onoff.addEventListener('click', toggleOnOff);
+	</script>
 </body>
 </html>
