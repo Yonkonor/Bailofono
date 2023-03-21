@@ -2,105 +2,108 @@
 <html>
 <head>
 	<meta name="viewport" content="width=device-width, initial-scale=1">
-	<title>Sintetizador de sonido</title>
+	<title>Sintetizador de Sonido</title>
 	<style>
-		#container {
-			display: flex;
-			flex-direction: column;
-			align-items: center;
-			margin-top: 70px;
+		body {
+			margin: 0;
+			padding: 0;
+			background-color: #f0f0f0;
+			font-family: Arial, sans-serif;
 		}
-
-		#slider {
+		
+		#barra {
+			position: absolute;
+			top: 70px;
+			left: 10%;
 			width: 80%;
 			height: 20px;
-			margin-bottom: 20px;
-			position: relative;
-			background-color: #ccc;
+			background-color: #fff;
+			border: 1px solid #ccc;
 			border-radius: 10px;
 		}
-
-		#knob {
-			width: 30px;
-			height: 30px;
-			background-color: #fff;
-			border-radius: 50%;
+		
+		#boton {
 			position: absolute;
-			top: -5px;
-			left: 50%;
-			transform: translateX(-50%);
+			top: 60px;
+			left: 10%;
+			width: 20px;
+			height: 40px;
+			background-color: #333;
+			border-radius: 5px;
 			cursor: pointer;
 		}
-
+		
 		#onoff {
-			padding: 10px;
-			background-color: #4CAF50;
+			position: absolute;
+			top: 120px;
+			left: 10%;
+			width: 80%;
+			height: 40px;
+			background-color: #333;
 			color: #fff;
 			border: none;
 			border-radius: 5px;
+			font-size: 18px;
 			cursor: pointer;
 		}
 	</style>
 </head>
 <body>
-	<div id="container">
-		<div id="slider">
-			<div id="knob"></div>
-		</div>
-		<button id="onoff">Encender</button>
+	<div id="barra">
+		<div id="boton"></div>
 	</div>
+	<button id="onoff" onclick="toggleSound()">Encender Sonido</button>
+	
 	<script>
-		const AudioContext = window.AudioContext || window.webkitAudioContext;
-		const audioCtx = new AudioContext();
-		const oscillator = audioCtx.createOscillator();
-		const gainNode = audioCtx.createGain();
-		oscillator.connect(gainNode);
-		gainNode.connect(audioCtx.destination);
-		oscillator.type = 'sine';
-		oscillator.start(0);
-
-		const slider = document.getElementById('slider');
-		const knob = document.getElementById('knob');
-		const onoff = document.getElementById('onoff');
-		const minFreq = 200;
-		const maxFreq = 2000;
-		let isOn = false;
-
-		function setFrequency() {
-			const sliderWidth = slider.clientWidth;
-			const knobPosition = knob.offsetLeft;
-			const frequency = (knobPosition / sliderWidth) * (maxFreq - minFreq) + minFreq;
-			oscillator.frequency.value = frequency;
-		}
-
-		function toggleOnOff() {
-			isOn = !isOn;
-			if (isOn) {
-				gainNode.gain.value = 0.5;
-				onoff.textContent = 'Apagar';
+		var context = new AudioContext();
+		var oscilador = null;
+		var playing = false;
+		
+		function toggleSound() {
+			if (playing) {
+				oscilador.stop();
+				playing = false;
+				document.getElementById("onoff").innerHTML = "Encender Sonido";
 			} else {
-				gainNode.gain.value = 0;
-				onoff.textContent = 'Encender';
+				oscilador = context.createOscillator();
+				oscilador.type = "sine";
+				oscilador.frequency.value = 200;
+				oscilador.connect(context.destination);
+				oscilador.start();
+				playing = true;
+				document.getElementById("onoff").innerHTML = "Apagar Sonido";
 			}
 		}
-
-		knob.addEventListener('touchmove', function(event) {
-			event.preventDefault();
-			const sliderRect = slider.getBoundingClientRect();
-			const touchX = event.targetTouches[0].clientX - sliderRect.left;
-			const knobWidth = knob.offsetWidth;
-			const maxKnobPosition = slider.clientWidth - knobWidth;
-			let knobPosition = touchX - knobWidth / 2;
-			if (knobPosition < 0) {
-				knobPosition = 0;
-			} else if (knobPosition > maxKnobPosition) {
-				knobPosition = maxKnobPosition;
-			}
-			knob.style.left = knobPosition + 'px';
-			setFrequency();
+		
+		document.addEventListener("DOMContentLoaded", function(event) {
+			var barra = document.getElementById("barra");
+			var boton = document.getElementById("boton");
+			var ancho = barra.offsetWidth - boton.offsetWidth;
+			var frecuencia = 200;
+			
+			barra.addEventListener("touchstart", function(event) {
+				event.preventDefault();
+				var touch = event.touches[0];
+				if (touch.target == boton) {
+					boton.offsetX = touch.clientX - boton.offsetLeft;
+				}
+			});
+			
+			barra.addEventListener("touchmove", function(event) {
+				event.preventDefault();
+				var touch = event.touches[0];
+				var x = touch.clientX - barra.offsetLeft - boton.offsetX;
+				if (x < 0) {
+					x = 0;
+				} else if (x > ancho) {
+					x = ancho;
+				}
+				boton.style.left = x + "px";
+				var posicion = x / ancho;
+				frecuencia = 200 + Math.round(posicion * 1800);
+				oscilador.frequency.value = frecuencia;
+			});
 		});
-
-		onoff.addEventListener('click', toggleOnOff);
 	</script>
 </body>
 </html>
