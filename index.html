@@ -37,6 +37,8 @@
 
 	<div id="output"></div>
 
+	<button id="startButton">Iniciar sonido</button>
+
 	<script>
 		window.AudioContext = window.AudioContext || window.webkitAudioContext;
 		var context = new AudioContext();
@@ -80,6 +82,11 @@
 
 		document.addEventListener('mouseup', function(event) {
 			document.removeEventListener('mousemove', moveSlider);
+		});
+
+		var startButton = document.getElementById('startButton');
+		startButton.addEventListener('click', function() {
+			oscillator.start();
 		});
 
 	</script>
