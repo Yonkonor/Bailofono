@@ -50,13 +50,14 @@
 		<button id="onoff">Encender</button>
 	</div>
 	<script>
-		const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+		const AudioContext = window.AudioContext || window.webkitAudioContext;
+		const audioCtx = new AudioContext();
 		const oscillator = audioCtx.createOscillator();
 		const gainNode = audioCtx.createGain();
 		oscillator.connect(gainNode);
 		gainNode.connect(audioCtx.destination);
 		oscillator.type = 'sine';
-		oscillator.start();
+		oscillator.start(0);
 
 		const slider = document.getElementById('slider');
 		const knob = document.getElementById('knob');
