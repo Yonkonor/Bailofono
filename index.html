@@ -1,35 +1,34 @@
 <!DOCTYPE html>
 <html>
   <head>
+    <title>Acelerómetro</title>
     <meta charset="UTF-8">
-    <title>Valores del acelerómetro</title>
-  </head>
-  <body>
-    <h1>Valores del acelerómetro</h1>
-    <p>X: <span id="acelerometro-x"></span></p>
-    <p>Y: <span id="acelerometro-y"></span></p>
-    <p>Z: <span id="acelerometro-z"></span></p>
-    <script>
-      if (typeof(DeviceOrientationEvent) !== "undefined" && typeof(DeviceOrientationEvent.requestPermission) === "function") {
-        DeviceOrientationEvent.requestPermission().then(function(permissionStatus) {
-          if (permissionStatus === "granted") {
-            window.addEventListener('deviceorientation', function(event) {
-              var accelerationX = event.accelerationIncludingGravity.x;
-              var accelerationY = event.accelerationIncludingGravity.y;
-              var accelerationZ = event.accelerationIncludingGravity.z;
-              document.getElementById('acelerometro-x').textContent = accelerationX;
-              document.getElementById('acelerometro-y').textContent = accelerationY;
-              document.getElementById('acelerometro-z').textContent = accelerationZ;
-            });
-          } else {
-            console.log('El usuario no otorgó permiso para acceder al acelerómetro');
-          }
-        }).catch(function(error) {
-          console.log('Ocurrió un error al solicitar permiso para acceder al acelerómetro: ', error);
-        });
-      } else {
-        console.log('Tu navegador no soporta la API de sensores');
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <style>
+      body {
+        background-color: green;
       }
+      
+      p {
+        color: black;
+        font-size: 24px;
+        font-weight: bold;
+      }
+    </style>
+  </head>
+  
+  <body>
+    <p id="x">Componente X: </p>
+    <p id="y">Componente Y: </p>
+    <p id="z">Componente Z: </p>
+
+    <script>
+      window.addEventListener("devicemotion", function(event) {
+        var acceleration = event.accelerationIncludingGravity;
+        document.getElementById("x").innerHTML += acceleration.x.toFixed(2);
+        document.getElementById("y").innerHTML += acceleration.y.toFixed(2);
+        document.getElementById("z").innerHTML += acceleration.z.toFixed(2);
+      });
     </script>
   </body>
 </html>
