@@ -75,8 +75,8 @@
 			sliderButton.style.left = posX + 'px';
 		}
 
-		slider.addEventListener('mousedown', function(event) {
-			moveSlider(event);
+		sliderButton.addEventListener('mousedown', function(event) {
+			event.preventDefault();
 			document.addEventListener('mousemove', moveSlider);
 		});
 
