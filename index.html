@@ -55,13 +55,11 @@
 	</div>
 	<button id="onoff" onclick="toggleSound()">Encender Sonido</button>
 	
-	<script>
+		<script>
 		var context = new AudioContext();
 		var oscilador = null;
 		var playing = false;
-		var acelerometro = null;
-		var intensidad = 0;
-		
+
 		function toggleSound() {
 			if (playing) {
 				oscilador.stop();
@@ -71,32 +69,33 @@
 				oscilador = context.createOscillator();
 				oscilador.type = "sine";
 				oscilador.frequency.value = 200;
-				oscilador.connect(context.destination);
+				
+				// Obtener la componente z del acelerómetro
+				window.addEventListener("devicemotion", function(event) {
+					var acceleration = event.accelerationIncludingGravity;
+					var z = acceleration.z;
+					// Modulación de amplitud con el valor de z del acelerómetro
+					osciladorGain.gain.value = 0.5 + (z / 20);
+				});
+				
+				// Crear nodo de ganancia para modulación de amplitud
+				var osciladorGain = context.createGain();
+				osciladorGain.gain.value = 0.5;
+				oscilador.connect(osciladorGain);
+				osciladorGain.connect(context.destination);
+				
 				oscilador.start();
 				playing = true;
 				document.getElementById("onoff").innerHTML = "Apagar Sonido";
 			}
 		}
-		
+
 		document.addEventListener("DOMContentLoaded", function(event) {
 			var barra = document.getElementById("barra");
 			var boton = document.getElementById("boton");
 			var ancho = barra.offsetWidth - boton.offsetWidth;
 			var frecuencia = 200;
-			
-			if (window.DeviceOrientationEvent) {
-				window.addEventListener("deviceorientation", function(event) {
-					acelerometro = event.accelerationIncludingGravity;
-					intensidad = Math.abs(acelerometro.z) / 10;
-					if (intensidad > 1) {
-						intensidad = 1;
-					}
-					if (playing) {
-						oscilador.gain.value = intensidad;
-					}
-				});
-			}
-			
+
 			barra.addEventListener("touchstart", function(event) {
 				event.preventDefault();
 				var touch = event.touches[0];
@@ -104,7 +103,21 @@
 					boton.offsetX = touch.clientX - boton.offsetLeft;
 				}
 			});
-			
+
+			barra.addEventListener("touchmove", function(event) {
+				event.preventDefault();
+				var touch = event.touches[0];
+				var x = touch.clientX - barra.offsetLeft - boton.offsetX;
+				if (x < 0) {
+					x = 0;
+				} else if (x > ancho) {
+					x = ancho;
+				}
+				boton.style.left = x + "px";
+				var posicion = x / ancho;
+				frecuencia = 200 + Math.round(posicion * 1800);
+				oscilador.frequency.value = frecuencia;
+			});
+		});
 	</script>
 </body>
-</html>
