@@ -75,7 +75,7 @@
 					var acceleration = event.accelerationIncludingGravity;
 					var z = acceleration.z;
 					// Modulación de amplitud con el valor de z del acelerómetro
-					osciladorGain.gain.value = 0.5 + (z / 20);
+					osciladorGain.gain.value = 0.5 + (z / 10);
 				});
 				
 				// Crear nodo de ganancia para modulación de amplitud
