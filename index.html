@@ -59,6 +59,8 @@
 		var context = new AudioContext();
 		var oscilador = null;
 		var playing = false;
+		var acelerometro = null;
+		var intensidad = 0;
 		
 		function toggleSound() {
 			if (playing) {
@@ -82,6 +84,19 @@
 			var ancho = barra.offsetWidth - boton.offsetWidth;
 			var frecuencia = 200;
 			
+			if (window.DeviceOrientationEvent) {
+				window.addEventListener("deviceorientation", function(event) {
+					acelerometro = event.accelerationIncludingGravity;
+					intensidad = Math.abs(acelerometro.z) / 10;
+					if (intensidad > 1) {
+						intensidad = 1;
+					}
+					if (playing) {
+						oscilador.gain.value = intensidad;
+					}
+				});
+			}
+			
 			barra.addEventListener("touchstart", function(event) {
 				event.preventDefault();
 				var touch = event.touches[0];
@@ -90,21 +105,6 @@
 				}
 			});
 			
-			barra.addEventListener("touchmove", function(event) {
-				event.preventDefault();
-				var touch = event.touches[0];
-				var x = touch.clientX - barra.offsetLeft - boton.offsetX;
-				if (x < 0) {
-					x = 0;
-				} else if (x > ancho) {
-					x = ancho;
-				}
-				boton.style.left = x + "px";
-				var posicion = x / ancho;
-				frecuencia = 200 + Math.round(posicion * 1800);
-				oscilador.frequency.value = frecuencia;
-			});
-		});
 	</script>
 </body>
 </html>
