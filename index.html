@@ -1,123 +1,47 @@
 <!DOCTYPE html>
 <html>
 <head>
-	<meta name="viewport" content="width=device-width, initial-scale=1">
-	<title>Sintetizador de Sonido</title>
-	<style>
-		body {
-			margin: 0;
-			padding: 0;
-			background-color: #f0f0f0;
-			font-family: Arial, sans-serif;
-		}
-		
-		#barra {
-			position: absolute;
-			top: 400px;
-			left: 10%;
-			width: 80%;
-			height: 20px;
-			background-color: #fff;
-			border: 1px solid #ccc;
-			border-radius: 10px;
-		}
-		
-		#boton {
-			position: absolute;
-			top: 0px;
-			left: 10%;
-			width: 40px;
-			height: 40px;
-			background-color: #333;
-			border-radius: 5px;
-			cursor: pointer;
-			z-index: 1;
-		}
-		
-		#onoff {
-			position: absolute;
-			top: 120px;
-			left: 10%;
-			width: 30%;
-			height: 40px;
-			background-color: #333;
-			color: #fff;
-			border: none;
-			border-radius: 5px;
-			font-size: 18px;
-			cursor: pointer;
-		}
-	</style>
-</head>
-<body>
-	<div id="barra">
-		<div id="boton"></div>
-	</div>
-	<button id="onoff" onclick="toggleSound()">Encender Sonido</button>
-	
-		<script>
-		var context = new AudioContext();
-		var oscilador = null;
-		var playing = false;
+	<title>Generar sonido sintético</title>
+	<script>
+		window.addEventListener('load', function() {
+			// Crear un contexto de audio
+			var context = new AudioContext();
 
-		function toggleSound() {
-			if (playing) {
-				oscilador.stop();
-				playing = false;
-				document.getElementById("onoff").innerHTML = "Encender Sonido";
-			} else {
-				oscilador = context.createOscillator();
-				oscilador.type = "sine";
-				oscilador.frequency.value = 200;
-				
-				// Obtener la componente z del acelerómetro
-				window.addEventListener("devicemotion", function(event) {
-					var acceleration = event.accelerationIncludingGravity;
-					var z = acceleration.z;
-					// Modulación de amplitud con el valor de z del acelerómetro
-					osciladorGain.gain.value = 0.5 + (z / 20);
-				});
-				
-				// Crear nodo de ganancia para modulación de amplitud
-				var osciladorGain = context.createGain();
-				osciladorGain.gain.value = 0.5;
-				oscilador.connect(osciladorGain);
-				osciladorGain.connect(context.destination);
-				
-				oscilador.start();
-				playing = true;
-				document.getElementById("onoff").innerHTML = "Apagar Sonido";
-			}
-		}
+			// Crear un oscilador para generar el tono
+			var oscillator = context.createOscillator();
+			oscillator.frequency.value = 500; // Frecuencia fundamental
 
-		document.addEventListener("DOMContentLoaded", function(event) {
-			var barra = document.getElementById("barra");
-			var boton = document.getElementById("boton");
-			var ancho = barra.offsetWidth - boton.offsetWidth;
-			var frecuencia = 200;
+			// Crear los dos primeros armónicos con las intensidades relativas especificadas
+			var harmonic1 = context.createOscillator();
+			harmonic1.frequency.value = 1000; // Frecuencia del segundo armónico
+			harmonic1.gain.value = 0.7; // Intensidad relativa del segundo armónico
 
-			barra.addEventListener("touchstart", function(event) {
-				event.preventDefault();
-				var touch = event.touches[0];
-				if (touch.target == boton) {
-					boton.offsetX = touch.clientX - boton.offsetLeft;
+			var harmonic2 = context.createOscillator();
+			harmonic2.frequency.value = 1500; // Frecuencia del tercer armónico
+			harmonic2.gain.value = 0.3; // Intensidad relativa del tercer armónico
+
+			// Crear un nodo de mezcla para sumar los armónicos
+			var mixer = context.createGain();
+			oscillator.connect(mixer);
+			harmonic1.connect(mixer);
+			harmonic2.connect(mixer);
+
+			// Conectar el nodo de mezcla al destino de audio
+			mixer.connect(context.destination);
+
+			// Controlar el encendido y apagado del sonido
+			var button = document.getElementById('button');
+			button.addEventListener('click', function() {
+				if (context.state === 'suspended') {
+					context.resume();
+				} else {
+					context.suspend();
 				}
-			});
-
-			barra.addEventListener("touchmove", function(event) {
-				event.preventDefault();
-				var touch = event.touches[0];
-				var x = touch.clientX - barra.offsetLeft - boton.offsetX;
-				if (x < 0) {
-					x = 0;
-				} else if (x > ancho) {
-					x = ancho;
-				}
-				boton.style.left = x + "px";
-				var posicion = x / ancho;
-				frecuencia = 200 + Math.round(posicion * 1000);
-				oscilador.frequency.value = frecuencia;
 			});
 		});
 	</script>
+</head>
+<body>
+	<button id="button">Encender / Apagar</button>
 </body>
+</html>
