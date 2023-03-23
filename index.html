@@ -5,7 +5,7 @@
 	<script>
 		window.addEventListener('load', function() {
 			// Crear un contexto de audio
-			var context = new AudioContext();
+			var context = new (window.AudioContext || window.webkitAudioContext)();
 
 			// Crear un oscilador para generar el tono
 			var oscillator = context.createOscillator();
