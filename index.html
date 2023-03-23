@@ -1,47 +1,63 @@
 <!DOCTYPE html>
 <html>
-<head>
-	<title>Generar sonido sintético</title>
-	<script>
-		window.addEventListener('load', function() {
-			// Crear un contexto de audio
-			var context = new (window.AudioContext || window.webkitAudioContext)();
+  <head>
+    <title>Sonido sintético "l"</title>
+  </head>
+  <body>
+    <button onclick="toggleSound()">Encender / Apagar</button>
+    <audio id="sound">
+      <source src="" type="audio/wav">
+    </audio>
+    
+    <script>
+      // Crear el contexto de audio
+      var context = new AudioContext();
 
-			// Crear un oscilador para generar el tono
-			var oscillator = context.createOscillator();
-			oscillator.frequency.value = 500; // Frecuencia fundamental
+      // Crear los osciladores y asignarlos a un nodo de ganancia
+      var osc1 = context.createOscillator();
+      var gain1 = context.createGain();
+      var osc2 = context.createOscillator();
+      var gain2 = context.createGain();
+      var osc3 = context.createOscillator();
+      var gain3 = context.createGain();
 
-			// Crear los dos primeros armónicos con las intensidades relativas especificadas
-			var harmonic1 = context.createOscillator();
-			harmonic1.frequency.value = 1000; // Frecuencia del segundo armónico
-			harmonic1.gain.value = 0.7; // Intensidad relativa del segundo armónico
+      // Establecer las frecuencias de los osciladores
+      osc1.frequency.value = 500;
+      osc2.frequency.value = 1000;
+      osc3.frequency.value = 1500;
 
-			var harmonic2 = context.createOscillator();
-			harmonic2.frequency.value = 1500; // Frecuencia del tercer armónico
-			harmonic2.gain.value = 0.3; // Intensidad relativa del tercer armónico
+      // Establecer las intensidades relativas de los osciladores
+      gain1.gain.value = 0.7;
+      gain2.gain.value = 0.3;
+      gain3.gain.value = 0.0;
 
-			// Crear un nodo de mezcla para sumar los armónicos
-			var mixer = context.createGain();
-			oscillator.connect(mixer);
-			harmonic1.connect(mixer);
-			harmonic2.connect(mixer);
+      // Conectar los osciladores a los nodos de ganancia
+      osc1.connect(gain1);
+      osc2.connect(gain2);
+      osc3.connect(gain3);
 
-			// Conectar el nodo de mezcla al destino de audio
-			mixer.connect(context.destination);
+      // Conectar los nodos de ganancia a la salida de audio
+      gain1.connect(context.destination);
+      gain2.connect(context.destination);
+      gain3.connect(context.destination);
 
-			// Controlar el encendido y apagado del sonido
-			var button = document.getElementById('button');
-			button.addEventListener('click', function() {
-				if (context.state === 'suspended') {
-					context.resume();
-				} else {
-					context.suspend();
-				}
-			});
-		});
-	</script>
-</head>
-<body>
-	<button id="button">Encender / Apagar</button>
-</body>
+      // Iniciar los osciladores
+      osc1.start();
+      osc2.start();
+      osc3.start();
+
+      // Función para encender y apagar el sonido
+      function toggleSound() {
+        var sound = document.getElementById("sound");
+        if (sound.paused) {
+          sound.src = "data:audio/wav;base64,UklGRkQAAABXQVZFZm10IBAAAAABAAIARKwAABCxAgAEABAAZGF0YUZyb20A/AAAAAAAAAI/AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAD6AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==";
+          context.resume();
+          sound.play();
+        } else {
+          sound.pause();
+          context.suspend();
+        }
+      }
+    </script>
+  </body>
 </html>
