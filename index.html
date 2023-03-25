@@ -2,55 +2,106 @@
 <html>
   <head>
     <meta charset="UTF-8">
-    <title>Reproductor de acordes</title>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/howler/2.2.3/howler.min.js"></script>
+    <title>Sintetizador de acordes</title>
   </head>
   <body>
-    <h1>Reproductor de acordes</h1>
-    <p>Haga clic en el botón para reproducir un acorde:</p>
-    <button onclick="playSound()">Reproducir acorde</button>
+    <h1>Sintetizador de acordes</h1>
+    <p>Seleccione el acorde:</p>
+    <input type="range" min="1" max="4" value="1" class="slider" id="slider">
     <p>Haga clic en el botón para encender o apagar el sonido:</p>
     <button onclick="toggleSound()">Encender / Apagar sonido</button>
     <script>
-      // Crea los objetos de sonido para cada acorde
-      var soundC = new Howl({
-        src: ['https://s3.amazonaws.com/freecodecamp/drums/Chord_1.mp3']
-      });
-      var soundGm = new Howl({
-        src: ['https://s3.amazonaws.com/freecodecamp/drums/Chord_2.mp3']
-      });
-      var soundF = new Howl({
-        src: ['https://s3.amazonaws.com/freecodecamp/drums/Chord_3.mp3']
-      });
-      var soundFm = new Howl({
-        src: ['https://s3.amazonaws.com/freecodecamp/drums/Chord_4.mp3']
-      });
+      // Crear el contexto de audio
+      var audioContext = new (window.AudioContext || window.webkitAudioContext)();
 
-      // Crea un array de acordes y un índice que se utiliza para seguir el acorde actual
-      var chords = [soundC, soundGm, soundF, soundFm];
-      var currentChordIndex = 0;
+      // Crear los osciladores para cada nota
+      var oscC = audioContext.createOscillator();
+      oscC.frequency.value = 261.63; // C4
+      var oscE = audioContext.createOscillator();
+      oscE.frequency.value = 329.63; // E4
+      var oscG = audioContext.createOscillator();
+      oscG.frequency.value = 392; // G4
+      var oscBb = audioContext.createOscillator();
+      oscBb.frequency.value = 466.16; // Bb4
+      var oscF = audioContext.createOscillator();
+      oscF.frequency.value = 349.23; // F4
+      var oscAb = audioContext.createOscillator();
+      oscAb.frequency.value = 415.30; // Ab4
 
-      // Función que cambia el acorde actual al siguiente en el array
-      function changeChord() {
-        currentChordIndex++;
-        if (currentChordIndex >= chords.length) {
-          currentChordIndex = 0;
-        }
-      }
+      // Crear los nodos de ganancia y conectar los osciladores a ellos
+      var gainC = audioContext.createGain();
+      gainC.gain.value = 0;
+      var gainE = audioContext.createGain();
+      gainE.gain.value = 0;
+      var gainG = audioContext.createGain();
+      gainG.gain.value = 0;
+      var gainBb = audioContext.createGain();
+      gainBb.gain.value = 0;
+      var gainF = audioContext.createGain();
+      gainF.gain.value = 0;
+      var gainAb = audioContext.createGain();
+      gainAb.gain.value = 0;
 
-      // Función que reproduce el sonido del acorde actual
-      function playSound() {
-        var currentChord = chords[currentChordIndex];
-        currentChord.play();
-        changeChord();
-      }
+      oscC.connect(gainC);
+      oscE.connect(gainC);
+      oscG.connect(gainG);
+      oscBb.connect(gainG);
+      oscF.connect(gainF);
+      oscAb.connect(gainF);
 
-      // Función que enciende o apaga el sonido
-      var isSoundOn = true;
-      function toggleSound() {
-        isSoundOn = !isSoundOn;
-        Howler.mute(!isSoundOn);
-      }
-    </script>
-  </body>
+      // Conectar los nodos de ganancia al contexto de audio
+      gainC.connect(audioContext.destination);
+      gainG.connect(audioContext.destination);
+      gainF.connect(audioContext.destination);
+
+      // Función que actualiza los valores de ganancia para cada acorde
+      function updateGains(sliderValue) {
+        switch(sliderValue) {
+          case 1:
+            gainC.gain.value = 1;
+            gainG.gain.value = 0;
+            gainF.gain.value = 0;
+            break;
+          case 2:
+            gainC.gain.value = 0;
+            gainG.gain.value = 1;
+            gainF.gain.value = 0;
+            break;
+                  case 3:
+        gainC.gain.value = 0;
+        gainG.gain.value = 0;
+        gainF.gain.value = 1;
+        break;
+      case 4:
+        gainC.gain.value = 0;
+        gainG.gain.value = 0;
+        gainF.gain.value = 0;
+        gainAb.gain.value = 1;
+        break;
+      default:
+        gainC.gain.value = 0;
+        gainG.gain.value = 0;
+        gainF.gain.value = 0;
+        gainAb.gain.value = 0;
+        break;
+    }
+  }
+
+  // Función que enciende o apaga el sonido
+  function toggleSound() {
+    if (audioContext.state === 'suspended') {
+      audioContext.resume();
+    }
+    if (audioContext.state === 'running') {
+      audioContext.suspend();
+    }
+  }
+
+  // Obtener el elemento de la corredera y agregar un listener para detectar cambios
+  var slider = document.getElementById("slider");
+  slider.addEventListener("input", function() {
+    updateGains(slider.value);
+  });
+</script>
+</body>
 </html>
