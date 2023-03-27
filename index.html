@@ -53,26 +53,31 @@
       gainC.connect(audioContext.destination);
       gainG.connect(audioContext.destination);
       gainF.connect(audioContext.destination);
+      gainAb.connect(audioContext.destination);
 
       // Función que actualiza los valores de ganancia para cada acorde
       function updateGains(sliderValue) {
         switch(sliderValue) {
-          case 1:
+          case "1":
             gainC.gain.value = 1;
             gainG.gain.value = 0;
             gainF.gain.value = 0;
+            gainAb.gain.value = 0;
             break;
-          case 2:
+          case "2":
             gainC.gain.value = 0;
             gainG.gain.value = 1;
             gainF.gain.value = 0;
+            gainAb.gain.value = 0;
             break;
-                  case 3:
-        gainC.gain.value = 0;
-        gainG.gain.value = 0;
-        gainF.gain.value = 1;
-        break;
-      case 4:
+          case "3":
+            gainC.gain.value = 0;
+            gainG.gain.value = 0;
+            gainF.gain.value = 1;
+            gainAb.gain.value = 0;
+
+                  
+      case "4":
         gainC.gain.value = 0;
         gainG.gain.value = 0;
         gainF.gain.value = 0;
