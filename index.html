@@ -1,112 +1,75 @@
 <!DOCTYPE html>
 <html>
-  <head>
-    <meta charset="UTF-8">
-    <title>Sintetizador de acordes</title>
-  </head>
-  <body>
-    <h1>Sintetizador de acordes</h1>
-    <p>Seleccione el acorde:</p>
-    <input type="range" min="1" max="4" value="1" class="slider" id="slider">
-    <p>Haga clic en el botón para encender o apagar el sonido:</p>
-    <button onclick="toggleSound()">Encender / Apagar sonido</button>
-    <script>
-      // Crear el contexto de audio
-      var audioContext = new (window.AudioContext || window.webkitAudioContext)();
+<head>
+	<meta charset="UTF-8">
+	<title>Acordes</title>
+	<style>
+		button {
+			width: 60px;
+			height: 60px;
+			margin: 10px;
+			border-radius: 5px;
+			background-color: #ccc;
+			color: #fff;
+			font-size: 16px;
+			font-weight: bold;
+			border: none;
+		}
+	</style>
+</head>
+<body>
+	<button id="btnDo">Do</button>
+	<button id="btnSolMenor">Sol menor</button>
+	<button id="btnFaMayor">Fa mayor</button>
+	<button id="btnFaMenor">Fa menor</button>
 
-      // Crear los osciladores para cada nota
-      var oscC = audioContext.createOscillator();
-      oscC.frequency.value = 261.63; // C4
-      var oscE = audioContext.createOscillator();
-      oscE.frequency.value = 329.63; // E4
-      var oscG = audioContext.createOscillator();
-      oscG.frequency.value = 392; // G4
-      var oscBb = audioContext.createOscillator();
-      oscBb.frequency.value = 466.16; // Bb4
-      var oscF = audioContext.createOscillator();
-      oscF.frequency.value = 349.23; // F4
-      var oscAb = audioContext.createOscillator();
-      oscAb.frequency.value = 415.30; // Ab4
+	<script>
+		var audioContext = new (window.AudioContext || window.webkitAudioContext)();
+		var oscillator;
 
-      // Crear los nodos de ganancia y conectar los osciladores a ellos
-      var gainC = audioContext.createGain();
-      gainC.gain.value = 0;
-      var gainE = audioContext.createGain();
-      gainE.gain.value = 0;
-      var gainG = audioContext.createGain();
-      gainG.gain.value = 0;
-      var gainBb = audioContext.createGain();
-      gainBb.gain.value = 0;
-      var gainF = audioContext.createGain();
-      gainF.gain.value = 0;
-      var gainAb = audioContext.createGain();
-      gainAb.gain.value = 0;
+		function playNote (frequency) {
+		    oscillator = audioContext.createOscillator();
+		    oscillator.type = 'sawtooth';
+		    oscillator.frequency.value = frequency;
+		    oscillator.connect(audioContext.destination);
+		    oscillator.start(audioContext.currentTime);
+		}
 
-      oscC.connect(gainC);
-      oscE.connect(gainC);
-      oscG.connect(gainG);
-      oscBb.connect(gainG);
-      oscF.connect(gainF);
-      oscAb.connect(gainF);
+		function stopNote () {
+		    oscillator.stop(audioContext.currentTime);
+		}
 
-      // Conectar los nodos de ganancia al contexto de audio
-      gainC.connect(audioContext.destination);
-      gainG.connect(audioContext.destination);
-      gainF.connect(audioContext.destination);
-      gainAb.connect(audioContext.destination);
+		document.getElementById("btnDo").addEventListener("touchstart", function() {
+		    playNote(261.63);
+		});
 
-      // Función que actualiza los valores de ganancia para cada acorde
-      function updateGains(sliderValue) {
-        switch(sliderValue) {
-          case "1":
-            gainC.gain.value = 1;
-            gainG.gain.value = 0;
-            gainF.gain.value = 0;
-            gainAb.gain.value = 0;
-            break;
-          case "2":
-            gainC.gain.value = 0;
-            gainG.gain.value = 1;
-            gainF.gain.value = 0;
-            gainAb.gain.value = 0;
-            break;
-          case "3":
-            gainC.gain.value = 0;
-            gainG.gain.value = 0;
-            gainF.gain.value = 1;
-            gainAb.gain.value = 0;
+		document.getElementById("btnDo").addEventListener("touchend", function() {
+		    stopNote();
+		});
 
-                  
-      case "4":
-        gainC.gain.value = 0;
-        gainG.gain.value = 0;
-        gainF.gain.value = 0;
-        gainAb.gain.value = 1;
-        break;
-      default:
-        gainC.gain.value = 0;
-        gainG.gain.value = 0;
-        gainF.gain.value = 0;
-        gainAb.gain.value = 0;
-        break;
-    }
-  }
+		document.getElementById("btnSolMenor").addEventListener("touchstart", function() {
+		    playNote(196);
+		});
 
-  // Función que enciende o apaga el sonido
-  function toggleSound() {
-    if (audioContext.state === 'suspended') {
-      audioContext.resume();
-    }
-    if (audioContext.state === 'running') {
-      audioContext.suspend();
-    }
-  }
+		document.getElementById("btnSolMenor").addEventListener("touchend", function() {
+		    stopNote();
+		});
 
-  // Obtener el elemento de la corredera y agregar un listener para detectar cambios
-  var slider = document.getElementById("slider");
-  slider.addEventListener("input", function() {
-    updateGains(slider.value);
-  });
-</script>
+		document.getElementById("btnFaMayor").addEventListener("touchstart", function() {
+		    playNote(349.23);
+		});
+
+		document.getElementById("btnFaMayor").addEventListener("touchend", function() {
+		    stopNote();
+		});
+
+		document.getElementById("btnFaMenor").addEventListener("touchstart", function() {
+		    playNote(329.63);
+		});
+
+		document.getElementById("btnFaMenor").addEventListener("touchend", function() {
+		    stopNote();
+		});
+	</script>
 </body>
 </html>
