@@ -1,85 +1,78 @@
 <!DOCTYPE html>
 <html>
 <head>
-	<meta charset="UTF-8">
-	<title>Acordes</title>
-	<style>
-		body {
-			text-align: center;
-			display: flex;
-			flex-direction: column;
-			align-items: center;
-			justify-content: center;
-			height: 100vh;
-		}
-
-		button {
-			width: 60px;
-			height: 60px;
-			margin: 10px;
-			border-radius: 5px;
-			background-color: #ccc;
-			color: #fff;
-			font-size: 16px;
-			font-weight: bold;
-			border: none;
-			user-select: none;
-		}
-	</style>
+	<title>Generador de sonido con acelerómetro</title>
 </head>
 <body>
-	<button id="btnDo">Do</button>
-	<button id="btnSolMenor">Sol menor</button>
-	<button id="btnFaMayor">Fa mayor</button>
-	<button id="btnFaMenor">Fa menor</button>
+
+	<!-- creamos un botón para activar el sonido -->
+	<button onclick="playSound()">Reproducir acorde de la mayor</button>
+
+	<!-- creamos un espacio para mostrar los valores del acelerómetro -->
+	<div id="accelerometerValues"></div>
 
 	<script>
-		var audioContext = new (window.AudioContext || window.webkitAudioContext)();
-		var oscillator;
 
-		function playNote (frequency) {
-		    oscillator = audioContext.createOscillator();
-		    oscillator.type = 'sawtooth';
-		    oscillator.frequency.value = frequency;
-		    oscillator.connect(audioContext.destination);
-		    oscillator.start(audioContext.currentTime);
+		// función para reproducir el sonido
+		function playSound() {
+			
+			// definimos las notas que forman el acorde de la mayor
+			var nota1 = new AudioContext();
+			var osc1 = nota1.createOscillator();
+			osc1.frequency.value = 440; // la nota A4 tiene una frecuencia de 440 Hz
+			osc1.type = 'sine';
+			
+			var nota2 = new AudioContext();
+			var osc2 = nota2.createOscillator();
+			osc2.frequency.value = 554.37; // la nota C#5 tiene una frecuencia de 554.37 Hz
+			osc2.type = 'sine';
+			
+			var nota3 = new AudioContext();
+			var osc3 = nota3.createOscillator();
+			osc3.frequency.value = 659.26; // la nota E5 tiene una frecuencia de 659.26 Hz
+			osc3.type = 'sine';
+
+			// creamos un objeto que nos permitirá controlar la intensidad del sonido
+			var gainNode = nota1.createGain();
+			gainNode.gain.value = 0; // comenzamos con una intensidad de cero
+
+			// conectamos los osciladores al nodo de intensidad
+			osc1.connect(gainNode);
+			osc2.connect(gainNode);
+			osc3.connect(gainNode);
+
+			// conectamos el nodo de intensidad al altavoz
+			gainNode.connect(nota1.destination);
+
+			// iniciamos los osciladores
+			osc1.start();
+			osc2.start();
+			osc3.start();
+
+			// obtenemos el valor de la componente z del acelerómetro
+			window.addEventListener("devicemotion", function(event) {
+				var z = event.accelerationIncludingGravity.z;
+
+				// ajustamos la intensidad del sonido en función del valor de z
+				if (z < 0) {
+					gainNode.gain.value = 1; // intensidad máxima cuando z es negativo
+				} else {
+					gainNode.gain.value = 0; // intensidad cero cuando z no varía o es positivo
+				}
+
+				// mostramos los valores del acelerómetro en pantalla
+				document.getElementById("accelerometerValues").innerHTML = "Valor de z: " + z;
+			});
+
+			// detenemos los osciladores después de 2 segundos
+			setTimeout(function() {
+				osc1.stop();
+				osc2.stop();
+				osc3.stop();
+			}, 2000);
 		}
 
-		function stopNote () {
-		    oscillator.stop(audioContext.currentTime);
-		}
-
-		document.getElementById("btnDo").addEventListener("touchstart", function() {
-		    playNote(261.63);
-		});
-
-		document.getElementById("btnDo").addEventListener("touchend", function() {
-		    stopNote();
-		});
-
-		document.getElementById("btnSolMenor").addEventListener("touchstart", function() {
-		    playNote(196);
-		});
-
-		document.getElementById("btnSolMenor").addEventListener("touchend", function() {
-		    stopNote();
-		});
-
-		document.getElementById("btnFaMayor").addEventListener("touchstart", function() {
-		    playNote(349.23);
-		});
-
-		document.getElementById("btnFaMayor").addEventListener("touchend", function() {
-		    stopNote();
-		});
-
-		document.getElementById("btnFaMenor").addEventListener("touchstart", function() {
-		    playNote(329.63);
-		});
-
-		document.getElementById("btnFaMenor").addEventListener("touchend", function() {
-		    stopNote();
-		});
 	</script>
+
 </body>
 </html>
