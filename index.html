@@ -1,37 +1,45 @@
 <!DOCTYPE html>
 <html>
-  <head>
-    <meta charset="UTF-8">
-    <title>Sintetizador con acelerómetro</title>
-    <script src="https://unpkg.com/tone"></script>
-  </head>
-  <body>
-    <h1>Sintetizador con acelerómetro</h1>
-    <button id="btn">Encender / Apagar</button>
-
-    <script>
-      const synth = new Tone.PolySynth().toDestination();
-      let isOn = false;
-
-      function toggleSynth() {
-        if (isOn) {
-          synth.releaseAll();
-          isOn = false;
-        } else {
-          isOn = true;
-          Tone.start();
-          const accl = new Accelerometer({frequency: 60});
-          accl.addEventListener('reading', () => {
-            const z = accl.z;
-            const vol = z > 0 ? z : 0;
-            synth.volume.value = vol * 12 - 12;
-          });
-          accl.start();
-        }
-      }
-
-      const btn = document.getElementById('btn');
-      btn.addEventListener('touchstart', toggleSynth);
-    </script>
-  </body>
+<head>
+	<meta charset="UTF-8">
+	<title>Sonido sintético</title>
+</head>
+<body>
+	<h1>Sonido sintético de acorde de la mayor</h1>
+	
+	<!-- Botón para encender y apagar el sonido -->
+	<button id="botonSonido" onclick="toggleSonido()">Encender sonido</button>
+	
+	<script>
+		// Crear el contexto de audio
+		var contextoAudio = new (window.AudioContext || window.webkitAudioContext)();
+		
+		// Crear el oscilador
+		var oscilador = contextoAudio.createOscillator();
+		oscilador.type = 'sawtooth';
+		oscilador.frequency.value = 440; // frecuencia del la 440Hz
+		
+		// Crear el filtro
+		var filtro = contextoAudio.createBiquadFilter();
+		filtro.type = 'lowpass';
+		filtro.frequency.value = 1000; // frecuencia de corte del filtro
+		
+		// Conectar el oscilador al filtro y el filtro al destino de audio
+		oscilador.connect(filtro);
+		filtro.connect(contextoAudio.destination);
+		
+		// Función para encender y apagar el sonido
+		function toggleSonido() {
+			if (oscilador.started) {
+				oscilador.stop();
+				oscilador.started = false;
+				document.getElementById('botonSonido').innerHTML = 'Encender sonido';
+			} else {
+				oscilador.start();
+				oscilador.started = true;
+				document.getElementById('botonSonido').innerHTML = 'Apagar sonido';
+			}
+		}
+	</script>
+</body>
 </html>
