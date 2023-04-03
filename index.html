@@ -1,52 +1,62 @@
 <!DOCTYPE html>
 <html>
-  <head>
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>Sintetizador de acorde de la mayor</title>
-  </head>
-  <body>
-    <h1>Sintetizador de acorde de la mayor</h1>
-    <button id="playButton" style="font-size: 3em;">Pulsa para tocar el acorde de la mayor</button>
-
-    <script>
-      const audioContext = new AudioContext();
-
-      function playAChord() {
-        // Crea los osciladores para cada nota del acorde de la mayor
-        const oscillator1 = audioContext.createOscillator();
-        oscillator1.frequency.setValueAtTime(440, audioContext.currentTime); // La nota La
-        const oscillator2 = audioContext.createOscillator();
-        oscillator2.frequency.setValueAtTime(554.37, audioContext.currentTime); // La nota Do#
-        const oscillator3 = audioContext.createOscillator();
-        oscillator3.frequency.setValueAtTime(659.26, audioContext.currentTime); // La nota Mi
-
-        // Crea un nodo de ganancia para mezclar los sonidos de las notas
-        const gainNode = audioContext.createGain();
-        gainNode.gain.setValueAtTime(0.2, audioContext.currentTime);
-
-        // Conecta los osciladores y el nodo de ganancia a la salida de audio
-        oscillator1.connect(gainNode);
-        oscillator2.connect(gainNode);
-        oscillator3.connect(gainNode);
-        gainNode.connect(audioContext.destination);
-
-        // Inicia los osciladores
-        oscillator1.start();
-        oscillator2.start();
-        oscillator3.start();
-
-        // Detiene los osciladores después de 2 segundos
-        setTimeout(() => {
-          oscillator1.stop();
-          oscillator2.stop();
-          oscillator3.stop();
-        }, 2000);
-      }
-
-      // Asigna la función `playAChord` al evento click del botón
-      document.getElementById('playButton').addEventListener('click', () => {
-        playAChord();
-      });
-    </script>
-  </body>
+<head>
+	<meta charset="UTF-8">
+	<title>Sonido sintético</title>
+	<style>
+		.no-seleccionable {
+			user-select: none;
+			-moz-user-select: none;
+			-khtml-user-select: none;
+			-webkit-user-select: none;
+			-o-user-select: none;
+		}
+	</style>
+</head>
+<body>
+	<h1>Sonido sintético de acorde de la mayor</h1>
+	
+	<!-- Botón para encender y apagar el sonido -->
+	<button id="botonSonido" class="no-seleccionable" disabled onmousedown="toggleSonido()">Encender sonido</button>
+	
+	<script>
+		// Crear el contexto de audio
+		var contextoAudio = new (window.AudioContext || window.webkitAudioContext)();
+		
+		// Crear el oscilador
+		var oscilador = contextoAudio.createOscillator();
+		oscilador.type = 'sawtooth';
+		oscilador.frequency.value = 440; // frecuencia del la 440Hz
+		
+		// Crear el filtro
+		var filtro = contextoAudio.createBiquadFilter();
+		filtro.type = 'lowpass';
+		filtro.frequency.value = 1000; // frecuencia de corte del filtro
+		
+		// Conectar el oscilador al filtro y el filtro al destino de audio
+		oscilador.connect(filtro);
+		filtro.connect(contextoAudio.destination);
+		
+		// Función para encender y apagar el sonido
+		function toggleSonido() {
+			if (oscilador.started) {
+				oscilador.stop();
+				oscilador.started = false;
+				document.getElementById('botonSonido').innerHTML = 'Encender sonido';
+				document.getElementById('botonSonido').disabled = true;
+			} else {
+				oscilador.start();
+				oscilador.started = true;
+				document.getElementById('botonSonido').innerHTML = 'Apagar sonido';
+			}
+		}
+		
+		// Controlar el estado del botón y la reproducción del sonido
+		oscilador.onended = function() {
+			oscilador.started = false;
+			document.getElementById('botonSonido').innerHTML = 'Encender sonido';
+			document.getElementById('botonSonido').disabled = false;
+		};
+	</script>
+</body>
 </html>
