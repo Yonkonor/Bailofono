@@ -3,37 +3,82 @@
   <head>
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/tone/14.8.26/Tone.js"></script>
+    <style>
+      body {
+        margin: 0;
+        padding: 0;
+        height: 100%;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        background-color: #f2f2f2;
+      }
+      
+      h1 {
+        font-size: 3rem;
+        margin-bottom: 1rem;
+      }
+      
+      button {
+        font-size: 2rem;
+        padding: 1rem;
+        border-radius: 1rem;
+        background-color: #1abc9c;
+        color: white;
+        border: none;
+        box-shadow: 2px 2px 8px rgba(0, 0, 0, 0.2);
+      }
+      
+      button:focus {
+        outline: none;
+      }
+    </style>
   </head>
   <body>
-    <div style="text-align:center;">
-      <h1>Sintetizador</h1>
-      <button onclick="toggleSound()">Encender / Apagar</button>
-    </div>
+    <h1>Sintetizador</h1>
+    <button id="toggleButton">Encender</button>
     <script>
       let synth = new Tone.Synth().toDestination();
       let isPlaying = false;
-
-      // Configuración del acelerómetro
-      if (window.DeviceMotionEvent) {
-        window.addEventListener('devicemotion', function(e) {
-          let z = e.accelerationIncludingGravity.z;
-          let intensity = z > 0 ? z : 0;
-          synth.volume.value = (intensity / 10); // ajusta el volumen del sintetizador
-        });
-      }
-
-      // Función para encender / apagar el sonido
+      
       function toggleSound() {
         if (!isPlaying) {
-          // Genera el acorde de la mayor y reproduce el sonido
-          synth.triggerAttackRelease(["C4", "E4", "G4"], "4n");
+          synth.triggerAttack(["C4", "E4", "G4"]);
           isPlaying = true;
         } else {
-          // Detiene el sonido
-          synth.releaseAll();
+          synth.triggerRelease();
           isPlaying = false;
         }
       }
+      
+      if (window.DeviceMotionEvent) {
+        let prevZ = 0;
+        window.addEventListener('devicemotion', function(event) {
+          let z = event.accelerationIncludingGravity.z;
+          if (z * prevZ < 0) {
+            synth.volume.value = 1;
+          } else {
+            synth.volume.value = 0;
+          }
+          prevZ = z;
+        });
+      }
+      
+      let button = document.getElementById("toggleButton");
+      button.addEventListener("touchstart", function(event) {
+        event.preventDefault();
+        toggleSound();
+        if (isPlaying) {
+          this.textContent = "Apagar";
+        } else {
+          this.textContent = "Encender";
+        }
+      });
+      
+      button.addEventListener("touchend", function(event) {
+        event.preventDefault();
+      });
     </script>
   </body>
 </html>
