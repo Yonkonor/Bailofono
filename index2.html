@@ -68,19 +68,19 @@
 			} else {
 				oscilador = context.createOscillator();
 				oscilador.type = "sine";
-				oscilador.frequency.value = 200;
+				oscilador.frequency.value = 50;
 				
 				// Obtener la componente z del acelerómetro
 				window.addEventListener("devicemotion", function(event) {
 					var acceleration = event.accelerationIncludingGravity;
 					var z = acceleration.z;
 					// Modulación de amplitud con el valor de z del acelerómetro
-					osciladorGain.gain.value = 0.5 + (z / 20);
+					osciladorGain.gain.value =  (z / 20);
 				});
 				
 				// Crear nodo de ganancia para modulación de amplitud
 				var osciladorGain = context.createGain();
-				osciladorGain.gain.value = 0.5;
+				osciladorGain.gain.value = 0.9;
 				oscilador.connect(osciladorGain);
 				osciladorGain.connect(context.destination);
 				
