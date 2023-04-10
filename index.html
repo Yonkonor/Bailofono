@@ -75,7 +75,7 @@
 					var acceleration = event.accelerationIncludingGravity;
 					var z = acceleration.z;
 					// Modulación de amplitud con el valor de z del acelerómetro
-					osciladorGain.gain.value =  (z / 20);
+					osciladorGain.gain.value =  (z / 2);
 				});
 				
 				// Crear nodo de ganancia para modulación de amplitud
@@ -115,7 +115,7 @@
 				}
 				boton.style.left = x + "px";
 				var posicion = x / ancho;
-				frecuencia = 200 + Math.round(posicion * 1000);
+				frecuencia = 200 + Math.round(posicion * 500);
 				oscilador.frequency.value = frecuencia;
 			});
 		});
