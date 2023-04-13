@@ -1,53 +1,55 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Acelerómetro</title>
+	<title>Acelerómetro</title>
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
 </head>
 <body>
-    <canvas id="grafica" width="400" height="400"></canvas>
-    <br>
-    <button id="btn-iniciar" onclick="iniciar()">Iniciar</button>
-    <button id="btn-detener" onclick="detener()">Detener</button>
-    <script>
-        var canvas = document.getElementById("grafica");
-        var ctx = canvas.getContext("2d");
-        var width = canvas.width;
-        var height = canvas.height;
-        var x = 0;
-        var valores_z = [];
-        var capturando = false;
+	<div id="chart-container"></div>
+	<button id="start-btn">Iniciar</button>
+	<button id="stop-btn">Detener</button>
 
-        function iniciar() {
-            capturando = true;
-            valores_z = [];
-            x = 0;
-        }
+	<script>
+		var chartData = [];
+		var chart;
 
-        function detener() {
-            capturando = false;
-        }
+		function start() {
+			window.addEventListener('devicemotion', function(e) {
+				var z = e.accelerationIncludingGravity.z;
+				var time = new Date().getTime();
+				chartData.push({
+					x: time,
+					y: z
+				});
+				chart.render();
+			}, true);
+		}
 
-        window.addEventListener("devicemotion", function(event) {
-            var acceleration = event.accelerationIncludingGravity;
-            var z = acceleration.z;
-            if (capturando) {
-                valores_z.push(z);
-            }
-        });
+		function stop() {
+			window.removeEventListener('devicemotion', true);
+		}
 
-        setInterval(function() {
-            ctx.clearRect(0, 0, width, height);
-            ctx.beginPath();
-            ctx.moveTo(0, height / 2);
-            for (var i = 0; i < valores_z.length; i++) {
-                var y = height / 2 - valores_z[i] * 10;
-                ctx.lineTo(x + i, y);
-            }
-            ctx.stroke();
-            x += valores_z.length;
-        }, 100);
-    </script>
+		window.onload = function () {
+			chart = new CanvasJS.Chart("chart-container", {
+				title: {
+					text: "Acelerómetro"
+				},
+				axisX: {
+					title: "Tiempo (ms)"
+				},
+				axisY: {
+					title: "Componente Z"
+				},
+				data: [{
+					type: "line",
+					dataPoints: chartData
+				}]
+			});
+
+			document.getElementById("start-btn").addEventListener("click", start);
+			document.getElementById("stop-btn").addEventListener("click", stop);
+		}
+	</script>
+
 </body>
 </html>
