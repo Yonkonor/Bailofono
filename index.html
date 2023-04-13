@@ -1,35 +1,6 @@
 <!DOCTYPE html>
 <html>
 <head>
-	<meta name="viewport" content="width=device-width, initial-scale=1">
-	<title>Sintetizador de Sonido</title>
-	<style>
-		body {
-			margin: 0;
-			padding: 0;
-			background-color: #f0f0f0;
-			font-family: Arial, sans-serif;
-		}
-		
-		#barra {
-			position: absolute;
-			top: 400px;
-			left: 10%;
-			width: 80%;
-			height: 20px;
-			background-color: #fff;
-			border: 1px solid #ccc;
-			border-radius: 10px;
-		}
-		
-		#boton {
-			position: absolute;
-			top: 0px;
-			left: 10%;
-			width: 40px;
-			heig<!DOCTYPE html>
-<html>
-<head>
 	<title>Acelerómetro</title>
 	<meta name="viewport" content="width=device-width, initial-scale=1">
 	<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
@@ -110,79 +81,6 @@
 			var acceleration = event.accelerationIncludingGravity;
 			var zValue = acceleration.z;
 		});
-	</script>
-</body>
-</html>vt: 40px;
-			background-color: #333;
-			border-radius: 5px;
-			cursor: pointer;
-			z-index: 1;
-		}
-		
-		#onoff {
-			position: absolute;
-			top: 120px;
-			left: 10%;
-			width: 30%;
-			height: 40px;
-			background-color: #333;
-			color: #fff;
-			border: none;
-			border-radius: 5px;
-			font-size: 18px;
-			cursor: pointer;
-		}
-	</style>
-</head>
-<body>
-	<div id="barra">
-		<div id="boton"></div>
-	</div>
-	<button id="onoff" onclick="toggleSound()">Encender Sonido</button>
-	
-	<script>
-		var context = new AudioContext();
-		var oscilador = null;
-		var playing = false;
-		var lastSign = null;
-		var osciladorGain = context.createGain();
-		osciladorGain.gain.value = 0.5;
-
-		function toggleSound() {
-			if (playing) {
-				oscilador.stop();
-				playing = false;
-				document.getElementById("onoff").innerHTML = "Encender Sonido";
-			} else {
-				oscilador = context.createOscillator();
-				oscilador.type = "sine";
-				oscilador.frequency.value = 200;
-				
-				// Obtener la componente z del acelerómetro
-				window.addEventListener("devicemotion", function(event) {
-					var acceleration = event.accelerationIncludingGravity;
-					var z = acceleration.z;
-					var currentSign = Math.sign(z);
-					// Si la señal de z cambió de signo, la amplitud es máxima
-					if (lastSign != null && currentSign != lastSign) {
-						osciladorGain.gain.value = 1.0;
-					} else {
-						osciladorGain.gain.value = 0.5;
-					}
-					lastSign = currentSign;
-				});
-				
-				oscilador.connect(osciladorGain);
-				osciladorGain.connect(context.destination);
-				
-				oscilador.start();
-				playing = true;
-				document.getElementById("onoff").innerHTML = "Apagar Sonido";
-			}
-		
-
-		document.addEventListener
-
 	</script>
 </body>
 </html>
