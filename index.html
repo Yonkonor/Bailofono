@@ -27,7 +27,92 @@
 			top: 0px;
 			left: 10%;
 			width: 40px;
-			height: 40px;
+			heig<!DOCTYPE html>
+<html>
+<head>
+	<title>Acelerómetro</title>
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+	<style>
+		body {
+			margin: 0;
+			padding: 0;
+			background-color: #f0f0f0;
+			font-family: Arial, sans-serif;
+		}
+		canvas {
+			display: block;
+			margin: auto;
+			max-width: 80%;
+		}
+	</style>
+</head>
+<body>
+	<h1>Acelerómetro</h1>
+	<canvas id="myChart"></canvas>
+
+	<script>
+		// Obtener contexto del canvas
+		var ctx = document.getElementById('myChart').getContext('2d');
+
+		// Definir gráfico de línea
+		var chart = new Chart(ctx, {
+			type: 'line',
+			data: {
+				labels: [],
+				datasets: [{
+					label: 'Componente Z del Acelerómetro',
+					borderColor: 'rgb(255, 99, 132)',
+					backgroundColor: 'rgba(255, 99, 132, 0.5)',
+					data: [],
+					fill: false
+				}]
+			},
+			options: {
+				responsive: true,
+				title: {
+					display: true,
+					text: 'Componente Z del Acelerómetro en función del tiempo'
+				},
+				scales: {
+					xAxes: [{
+						type: 'realtime',
+						realtime: {
+							duration: 20000,
+							refresh: 1000,
+							delay: 1000,
+							onRefresh: function(chart) {
+								chart.data.datasets.forEach(function(dataset) {
+									dataset.data.push({
+										x: Date.now(),
+										y: zValue
+									});
+								});
+							}
+						}
+					}],
+					yAxes: [{
+						scaleLabel: {
+							display: true,
+							labelString: 'Valor de la componente Z del Acelerómetro'
+						},
+						ticks: {
+							min: -10,
+							max: 10
+						}
+					}]
+				}
+			}
+		});
+
+		// Obtener valores del acelerómetro
+		window.addEventListener("devicemotion", function(event) {
+			var acceleration = event.accelerationIncludingGravity;
+			var zValue = acceleration.z;
+		});
+	</script>
+</body>
+</html>vt: 40px;
 			background-color: #333;
 			border-radius: 5px;
 			cursor: pointer;
