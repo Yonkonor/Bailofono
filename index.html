@@ -1,55 +1,68 @@
 <!DOCTYPE html>
 <html>
 <head>
-	<title>Acelerómetro</title>
-	<meta name="viewport" content="width=device-width, initial-scale=1.0">
-</head>
-<body>
-	<div id="chart-container"></div>
-	<button id="start-btn">Iniciar</button>
-	<button id="stop-btn">Detener</button>
-
+	<title>Acuerdo de la menor con armónicos</title>
 	<script>
-		var chartData = [];
-		var chart;
-
-		function start() {
-			window.addEventListener('devicemotion', function(e) {
-				var z = e.accelerationIncludingGravity.z;
-				var time = new Date().getTime();
-				chartData.push({
-					x: time,
-					y: z
-				});
-				chart.render();
-			}, true);
+		var audioContext = new (window.AudioContext || window.webkitAudioContext)();
+		var oscillator;
+		
+		function generateAudio() {
+			// Frecuencias de las notas A, C y E
+			var aFreq = 440;
+			var cFreq = aFreq * Math.pow(2, (-3/12));
+			var eFreq = aFreq * Math.pow(2, (-7/12));
+			
+			// Frecuencias de los armónicos
+			var aHarmonic1Freq = aFreq * 2;
+			var aHarmonic2Freq = aFreq * 3;
+			var aHarmonic3Freq = aFreq * 4;
+			var cHarmonic1Freq = cFreq * 2;
+			var cHarmonic2Freq = cFreq * 3;
+			var cHarmonic3Freq = cFreq * 4;
+			var eHarmonic1Freq = eFreq * 2;
+			var eHarmonic2Freq = eFreq * 3;
+			var eHarmonic3Freq = eFreq * 4;
+			
+			// Duración del sonido en segundos
+			var duration = 5;
+			
+			// Número de muestras del sonido
+			var sampleRate = 44100;
+			var numSamples = duration * sampleRate;
+			
+			// Crear arreglo para almacenar las muestras del sonido
+			var audioData = new Float32Array(numSamples);
+			
+			// Generar las muestras del sonido utilizando la fórmula de la onda sinusoidal
+			for (var i = 0; i < numSamples; i++) {
+				var t = i / sampleRate;
+				var aWave = Math.sin(2 * Math.PI * aFreq * t) + Math.sin(2 * Math.PI * aHarmonic1Freq * t) + Math.sin(2 * Math.PI * aHarmonic2Freq * t) + Math.sin(2 * Math.PI * aHarmonic3Freq * t);
+				var cWave = Math.sin(2 * Math.PI * cFreq * t) + Math.sin(2 * Math.PI * cHarmonic1Freq * t) + Math.sin(2 * Math.PI * cHarmonic2Freq * t) + Math.sin(2 * Math.PI * cHarmonic3Freq * t);
+				var eWave = Math.sin(2 * Math.PI * eFreq * t) + Math.sin(2 * Math.PI * eHarmonic1Freq * t) + Math.sin(2 * Math.PI * eHarmonic2Freq * t) + Math.sin(2 * Math.PI * eHarmonic3Freq * t);
+				var sample = (aWave + cWave + eWave) / 3;
+				audioData[i] = sample;
+			}
+			
+			// Crear un objeto de audio para reproducir las muestras
+			var audioBuffer = audioContext.createBuffer(1, numSamples, sampleRate);
+			audioBuffer.getChannelData(0).set(audioData);
+			var audioSource = audioContext.createBufferSource();
+			audioSource.buffer = audioBuffer;
+			audioSource.connect(audioContext.destination);
+			
+			// Iniciar la reproducción
+			audioSource.start(0);
+			oscillator = audioSource;
 		}
-
-		function stop() {
-			window.removeEventListener('devicemotion', true);
-		}
-
-		window.onload = function () {
-			chart = new CanvasJS.Chart("chart-container", {
-				title: {
-					text: "Acelerómetro"
-				},
-				axisX: {
-					title: "Tiempo (ms)"
-				},
-				axisY: {
-					title: "Componente Z"
-				},
-				data: [{
-					type: "line",
-					dataPoints: chartData
-				}]
-			});
-
-			document.getElementById("start-btn").addEventListener("click", start);
-			document.getElementById("stop-btn").addEventListener("click", stop);
+		
+		function stopAudio() {
+			oscillator.stop();
 		}
 	</script>
-
+</head>
+<body>
+	<button onclick="generateAudio()">
+	</button>
+    <button onclick="stopAudio()">Stop</button>
 </body>
 </html>
