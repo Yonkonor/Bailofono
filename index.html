@@ -13,36 +13,40 @@
 		}
 	</style>
 </head>
-	<script>
-		var audioContext = new (window.AudioContext || window.webkitAudioContext)();
-		var oscillator;
-		
-		function generateAudio() {
-			// Frecuencias de las notas A, C y E
-			var aFreq = 440;
-			var cFreq = aFreq * Math.pow(2, (-3/12));
-			var eFreq = aFreq * Math.pow(2, (-7/12));
-			
-			// Frecuencias de los armónicos
-			var aHarmonic1Freq = aFreq * 2;
-			var aHarmonic2Freq = aFreq * 3;
-			var aHarmonic3Freq = aFreq * 4;
-			var cHarmonic1Freq = cFreq * 2;
-			var cHarmonic2Freq = cFreq * 3;
-			var cHarmonic3Freq = cFreq * 4;
-			var eHarmonic1Freq = eFreq * 2;
-			var eHarmonic2Freq = eFreq * 3;
-			var eHarmonic3Freq = eFreq * 4;
-			
-			// Duración del sonido en segundos
-			var duration = 5;
-			
-			// Número de muestras del sonido
-			var sampleRate = 44100;
-			var numSamples = duration * sampleRate;
-			
-			// Crear arreglo para almacenar las muestras del sonido
-			var audioData = new Float32Array(numSamples);
+	<input type="range" min="100" max="1000" step="1" value="440" id="freqSlider">
+
+<script>
+  var audioContext = new (window.AudioContext || window.webkitAudioContext)();
+  var oscillator;
+  var aFreq = 440;
+  
+  function generateAudio() {
+    // Frecuencias de las notas C y E
+    var cFreq = aFreq * Math.pow(2, (-3/12));
+    var eFreq = aFreq * Math.pow(2, (-7/12));
+    
+    // Frecuencias de los armónicos
+    var aHarmonic1Freq = aFreq * 2;
+    var aHarmonic2Freq = aFreq * 3;
+    var aHarmonic3Freq = aFreq * 4;
+    var cHarmonic1Freq = cFreq * 2;
+    var cHarmonic2Freq = cFreq * 3;
+    var cHarmonic3Freq = cFreq * 4;
+    var eHarmonic1Freq = eFreq * 2;
+    var eHarmonic2Freq = eFreq * 3;
+    var eHarmonic3Freq = eFreq * 4;
+    
+    // Duración del sonido en segundos
+    var duration = 5;
+    
+    // Número de muestras del sonido
+    var sampleRate = 44100;
+    var numSamples = duration * sampleRate;
+    
+    // Crear arreglo para almacenar las muestras del sonido
+    var audioData = new Float32Array(numSamples);
+    
+    
 			
 			// Generar las muestras del sonido utilizando la fórmula de la onda sinusoidal
 			for (var i = 0; i < numSamples; i++) {
