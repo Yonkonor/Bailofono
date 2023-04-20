@@ -11,38 +11,50 @@
 			width: 200px;
 			height: 50px;
 		}
+		#barra {
+			position: absolute;
+			top: 400px;
+			left: 10%;
+			width: 80%;
+			height: 20px;
+			background-color: #fff;
+			border: 1px solid #ccc;
+			border-radius: 10px;
 	</style>
 </head>
-	<script>
-		var audioContext = new (window.AudioContext || window.webkitAudioContext)();
-		var oscillator;
-		
-		function generateAudio() {
-			// Frecuencias de las notas A, C y E
-			var aFreq = 440;
-			var cFreq = aFreq * Math.pow(2, (-3/12));
-			var eFreq = aFreq * Math.pow(2, (-7/12));
-			
-			// Frecuencias de los armónicos
-			var aHarmonic1Freq = aFreq * 2;
-			var aHarmonic2Freq = aFreq * 3;
-			var aHarmonic3Freq = aFreq * 4;
-			var cHarmonic1Freq = cFreq * 2;
-			var cHarmonic2Freq = cFreq * 3;
-			var cHarmonic3Freq = cFreq * 4;
-			var eHarmonic1Freq = eFreq * 2;
-			var eHarmonic2Freq = eFreq * 3;
-			var eHarmonic3Freq = eFreq * 4;
-			
-			// Duración del sonido en segundos
-			var duration = 5;
-			
-			// Número de muestras del sonido
-			var sampleRate = 44100;
-			var numSamples = duration * sampleRate;
-			
-			// Crear arreglo para almacenar las muestras del sonido
-			var audioData = new Float32Array(numSamples);
+	
+<script>
+  var audioContext = new (window.AudioContext || window.webkitAudioContext)();
+  var oscillator;
+  var aFreq = 440;
+  
+  function generateAudio() {
+    // Frecuencias de las notas C y E
+    var cFreq = aFreq * Math.pow(2, (-3/12));
+    var eFreq = aFreq * Math.pow(2, (-7/12));
+    
+    // Frecuencias de los armónicos
+    var aHarmonic1Freq = aFreq * 2;
+    var aHarmonic2Freq = aFreq * 3;
+    var aHarmonic3Freq = aFreq * 4;
+    var cHarmonic1Freq = cFreq * 2;
+    var cHarmonic2Freq = cFreq * 3;
+    var cHarmonic3Freq = cFreq * 4;
+    var eHarmonic1Freq = eFreq * 2;
+    var eHarmonic2Freq = eFreq * 3;
+    var eHarmonic3Freq = eFreq * 4;
+    
+    // Duración del sonido en segundos
+    var duration = 5;
+    
+    // Número de muestras del sonido
+    var sampleRate = 44100;
+    var numSamples = duration * sampleRate;
+    
+    // Crear arreglo para almacenar las muestras del sonido
+    var audioData = new Float32Array(numSamples);
+    
+    
 			
 			// Generar las muestras del sonido utilizando la fórmula de la onda sinusoidal
 			for (var i = 0; i < numSamples; i++) {
@@ -69,10 +81,58 @@
 		function stopAudio() {
 			oscillator.stop();
 		}
+	
+				
+				// Obtener la componente z del acelerómetro
+				window.addEventListener("devicemotion", function(event) {
+					var acceleration = event.accelerationIncludingGravity;
+					var z = acceleration.z;
+					// Modulación de amplitud con el valor de z del acelerómetro
+					osciladorGain.gain.value =  (z / 2);
+					// Actualizar el valor de z en el elemento HTML
+					document.getElementById("z-value").innerHTML = "z: " + z.toFixed(2);
+				});
+				
+				// Crear nodo de ganancia para modulación de amplitud
+				var osciladorGain = context.createGain();
+				osciladorGain.gain.value = 0.9;
+				oscilador.connect(osciladorGain);
+				osciladorGain.connect(context.destination);
+				
+				oscilador.start();
+				playing = true;
+				document.getElementById("onoff").innerHTML = "Apagar Sonido";
+			}
+		}
+
+		document.addEventListener("DOMContentLoaded", function(event) {
+			var barra = document.getElementById("barra");
+			var boton = document.getElementById("boton");
+			var ancho = barra.offsetWidth - boton.offsetWidth;
+		
+
+			barra.addEventListener("touchstart", function(event) {
+				event.preventDefault();
+				var touch = event.touches[0];
+				if (touch.target == boton) {
+					boton.offsetX = touch.clientX - boton.offsetLeft;
+				}
+			});
+
+			barra.addEventListener("touchmove", function(event) {
+				event.preventDefault();
+				var touch = event.touches[0];
+				var x = touch.clientX - barra.offsetLeft - boton.offsetX;
+				if (x < 0) {
+					x = 0;
+				} else if (x > ancho) {
+					x = ancho;
+				}
+				boton.style.left = x + "px";
+				var posicion = x / ancho;
+				frec = 200 + Math.round(posicion * 500);
+				oscilador.frequency.value = frec;
+			});
+		});
 	</script>
-</head>
-<body>
-	<button onclick="generateAudio()">Lam</button>
-   	<button onclick="stopAudio()">Stop</button>
 </body>
-</html>
