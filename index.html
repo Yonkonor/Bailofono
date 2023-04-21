@@ -86,12 +86,12 @@
 				
 				// Obtener la componente z del acelerómetro
 				window.addEventListener("devicemotion", function(event) {
-					var acceleration = event.accelerationIncludingGravity;
-					var z = acceleration.z;
-					// Modulación de amplitud con el valor de z del acelerómetro
-					osciladorGain.gain.value = Math.abs(z);
-					// Actualizar el valor de z en el elemento HTML
-					document.getElementById("z-value").innerHTML = "z: " + z.toFixed(2);
+				 var acceleration = event.accelerationIncludingGravity;
+ 				var z = acceleration.z;
+				 // Modulación de amplitud con el valor de z del acelerómetro
+				 osciladorGain.gain.value = z >= 0 ? z : 0;
+ 				// Actualizar el valor de z en el elemento HTML
+				 document.getElementById("z-value").innerHTML = "z: " + z.toFixed(2);
 				});
 				
 				// Crear nodo de ganancia para modulación de amplitud
