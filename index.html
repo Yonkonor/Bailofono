@@ -1,355 +1,141 @@
 <!DOCTYPE html>
 <html>
 <head>
-	<title>Acuerdo de la menor con armónicos</title>
-	<style>
-		button {
-			font-size: 24px;
-			padding: 12px 24px;
-			display: block;
-			margin: 0 auto 200px;
-			width: 200px;
-			height: 50px;
-		}
-	</style>
-</head>
-	<input type="range" min="100" max="1000" step="1" value="440" id="freqSlider">
-
-<script>
-  var audioContext = new (window.AudioContext || window.webkitAudioContext)();
-  var oscillator;
-  var aFreq = 440;
-  
-  function generateAudio() {
-    // Frecuencias de las notas C y E
-    var cFreq = aFreq * Math.pow(2, (-3/12));
-    var eFreq = aFreq * Math.pow(2, (-7/12));
-    
-    // Frecuencias de los armónicos
-    var aHarmonic1Freq = aFreq * 2;
-    var aHarmonic2Freq = aFreq * 3;
-    var aHarmonic3Freq = aFreq * 4;
-    var cHarmonic1Freq = cFreq * 2;
-    var cHarmonic2Freq = cFreq * 3;
-    var cHarmonic3Freq = cFreq * 4;
-    var eHarmonic1Freq = eFreq * 2;
-    var eHarmonic2Freq = eFreq * 3;
-    var eHarmonic3Freq = eFreq * 4;
-    
-    // Duración del sonido en segundos
-    var duration = 5;
-    
-    // Número de muestras del sonido
-    var sampleRate = 44100;
-    var numSamples = duration * sampleRate;
-    <!DOCTYPE html>
-<html>
-<head>
-	<title>Acuerdo de la menor con armónicos</title>
-	<style>
-		button {
-			font-size: 24px;
-			padding: 12px 24px;
-			display: block;
-			margin: 0 auto 200px;
-			width: 200px;
-			height: 50px;
-		}
-		#barra {
-			position: absolute;
-			top: 400px;
-			left: 10%;
-			width: 80%;
-			height: 20px;
-			background-color: #fff;
-			border: 1px solid #ccc;
-			border-radius: 10px;
-	</style>
-</head>
-	
-<script>
-  var audioContext = new (window.AudioContext || window.webkitAudioContext)();
-  var oscillator;
-  var aFreq = 440;
-  
-  function generateAudio() {
-    // Frecuencias de las notas C y E
-    var cFreq = aFreq * Math.pow(2, (-3/12));
-    var eFreq = aFreq * Math.pow(2, (-7/12));
-    
-    // Frecuencias de los armónicos
-    var aHarmonic1Freq = aFreq * 2;
-    var aHarmonic2Freq = aFreq * 3;
-    var aHarmonic3Freq = aFreq * 4;
-    var cHarmonic1Freq = cFreq * 2;
-    var cHarmonic2Freq = cFreq * 3;
-    var cHarmonic3Freq = cFreq * 4;
-    var eHarmonic1Freq = eFreq * 2;
-    var eHarmonic2Freq = eFreq * 3;
-    var eHarmonic3Freq = eFreq * 4;
-    
-    // Duración del sonido en segundos
-    var duration = 5;
-    
-    // Número de muestras del sonido
-    var sampleRate = 44100;
-    var numSamples = duration * sampleRate;
-    
-    // Crear arreglo para almacenar las muestras del sonido
-    var audioData = new Float32Array(numSamples);
-    
-    
-			
-			// Generar las muestras del sonido utilizando la fórmula de la onda sinusoidal
-			for (var i = 0; i < numSamples; i++) {
-				var t = i / sampleRate;
-				var aWave = Math.sin(2 * Math.PI * aFreq * t) + Math.sin(2 * Math.PI * aHarmonic1Freq * t) + Math.sin(2 * Math.PI * aHarmonic2Freq * t) + Math.sin(2 * Math.PI * aHarmonic3Freq * t);
-				var cWave = Math.sin(2 * Math.PI * cFreq * t) + Math.sin(2 * Math.PI * cHarmonic1Freq * t) + Math.sin(2 * Math.PI * cHarmonic2Freq * t) + Math.sin(2 * Math.PI * cHarmonic3Freq * t);
-				var eWave = Math.sin(2 * Math.PI * eFreq * t) + Math.sin(2 * Math.PI * eHarmonic1Freq * t) + Math.sin(2 * Math.PI * eHarmonic2Freq * t) + Math.sin(2 * Math.PI * eHarmonic3Freq * t);
-				var sample = (aWave + cWave + eWave) / 3;
-				audioData[i] = sample;
-			}
-			
-			// Crear un objeto de audio para reproducir las muestras
-			var audioBuffer = audioContext.createBuffer(1, numSamples, sampleRate);
-			audioBuffer.getChannelData(0).set(audioData);
-			var audioSource = audioContext.createBufferSource();
-			audioSource.buffer = audioBuffer;
-			audioSource.connect(audioContext.destination);
-			
-			// Iniciar la reproducción
-			audioSource.start(0);
-			oscillator = audioSource;
-		}
-		
-		function stopAudio() {
-			oscillator.stop();
-		}
-	
-				
-				// Obtener la componente z del acelerómetro
-				window.addEventListener("devicemotion", function(event) {
-					var acceleration = event.accelerationIncludingGravity;
-					var z = acceleration.z;
-					// Modulación de amplitud con el valor de z del acelerómetro
-					osciladorGain.gain.value =  (z / 2);
-					// Actualizar el valor de z en el elemento HTML
-					document.getElementById("z-value").innerHTML = "z: " + z.toFixed(2);
-				});
-				
-				// Crear nodo de ganancia para modulación de amplitud
-				var osciladorGain = context.createGain();
-				osciladorGain.gain.value = 0.9;
-				oscilador.connect(osciladorGain);
-				osciladorGain.connect(context.destination);
-				
-				oscilador.start();
-				playing = true;
-				document.getElementById("onoff").innerHTML = "Apagar Sonido";
-			}
-		}
-
-		document.addEventListener("DOMContentLoaded", function(event) {
-			var barra = document.getElementById("barra");
-			var boton = document.getElementById("boton");
-			var ancho = barra.offsetWidth - boton.offsetWidth;
-		
-
-			barra.addEventListener("touchstart", function(event) {
-				event.preventDefault();
-				var touch = event.touches[0];
-				if (touch.target == boton) {
-					boton.offsetX = touch.clientX - boton.offsetLeft;
-				}
-			});
-
-			barra.addEventListener("touchmove", function(event) {
-				event.preventDefault();
-				var touch = event.touches[0];
-				var x = touch.clientX - barra.offsetLeft - boton.offsetX;
-				if (x < 0) {
-					x = 0;
-				} else if (x > ancho) {
-					x = ancho;
-				}
-				boton.style.left = x + "px";
-				var posicion = x / ancho;
-				frec = 200 + Math.round(posicion * 500);
-				oscilador.frequency.value = frec;
-			});
-		});
-	</script>
-</body>
-    // Crear arreglo para almacenar las muestras del sonido
-    var audioData = new Float32Array(numSamples);
-    
-    
-			
-			// Generar las muestras del sonido utilizando la fórmula de la onda sinusoidal
-			for (var i = 0; i < numSamples; i++) {
-				var t = i / sampleRate;
-				var aWave = Math.sin(2 * Math.PI * aFreq * t) + Math.sin(2 * Math.PI * aHarmonic1Freq * t) + Math.sin(2 * Math.PI * aHarmonic2Freq * t) + Math.sin(2 * Math.PI * aHarmonic3Freq * t);
-				var cWave = Math.sin(2 * Math.PI * cFreq * t) + Math.sin(2 * Math.PI * cHarmonic1Freq * t) + Math.sin(2 * Math.PI * cHarmonic2Freq * t) + Math.sin(2 * Math.PI * cHarmonic3Freq * t);
-				var eWave = Math.sin(2 * Math.PI * eFreq * t) + Math.sin(2 * Math.PI * eHarmonic1Freq * t) + Math.sin(2 * Math.PI * eHarmonic2Freq * t) + Math.sin(2 * Math.PI * eHarmonic3Freq * t);
-				var sample = (aWave + cWave + eWave) / 3;
-				audioData[i] = sample;
-			}
-			
-			// Crear un objeto de audio para reproducir las muestras
-			var audioBuffer = audioContext.createBuffer(1, numSamples, sampleRate);
-			audioBuffer.getChannelData(0).set(audioData);
-			var audioSource = audioContext.createBufferSource();
-			audioSource.buffer = audioBuffer;
-			audioSource.connect(audioContext.destination);
-			
-			// Iniciar la reproducción
-			audioSource.start(0);
-			oscillator = audioSource;
-		}
-		
-		function stopAudio() {
-			oscillator.stop();
-		}
-	</script>
-</head>
-<body>
-	<button onclick="generateAudio()">Lam</button>
-   	<button onclick="stopAudio()">Stop</button>
-
+	<title>Generador de sonidos</title>
 	<meta name="viewport" content="width=device-width, initial-scale=1">
-	<title>Sintetizador de Sonido</title>
-	<style>
-		body {
-			margin: 0;
-			padding: 0;
-			background-color: #f0f0f0;
-			font-family: Arial, sans-serif;
-		}
-		
-		#barra {
-			position: absolute;
-			top: 400px;
-			left: 10%;
-			width: 80%;
-			height: 20px;
-			background-color: #fff;
-			border: 1px solid #ccc;
-			border-radius: 10px;
-		}
-		
-		#boton {
-			position: absolute;
-			top: 0px;
-			left: 10%;
-			width: 40px;
-			height: 40px;
-			background-color: #333;
-			border-radius: 5px;
-			cursor: pointer;
-			z-index: 1;
-		}
-		
-		#onoff {
-			position: absolute;
-			top: 120px;
-			left: 10%;
-			width: 30%;
-			height: 40px;
-			background-color: #333;
-			color: #fff;
-			border: none;
-			border-radius: 5px;
-			font-size: 18px;
-			cursor: pointer;
-		}
-
-		#z-value {
-			position: absolute;
-			top: 160px;
-			left: 10%;
-			width: 30%;
-			height: 40px;
-			background-color: #fff;
-			color: #333;
-			border: none;
-			border-radius: 5px;
-			font-size: 18px;
-			padding: 10px;
-		}
-	</style>
+	<link rel="stylesheet" type="text/css" href="style.css">
 </head>
 <body>
-	<div id="barra">
-		<div id="boton"></div>
+	<h1>Generador de sonidos</h1>
+	<div id="meter-container">
+		<div id="meter"></div>
 	</div>
-	<button id="onoff" onclick="toggleSound()">Encender Sonido</button>
-	<div id="z-value"></div>
-	
-		<script>
-		var context = new AudioContext();
-		var oscilador = null;
-		var playing = false;
-
-		function toggleSound() {
-			if (playing) {
-				oscilador.stop();
-				playing = false;
-				document.getElementById("onoff").innerHTML = "Encender Sonido";
-			} else {
-				oscilador = context.createOscillator();
-				oscilador.type = "sine";
-				oscilador.frequency.value = 50;
-				
-				// Obtener la componente z del acelerómetro
-				window.addEventListener("devicemotion", function(event) {
-					var acceleration = event.accelerationIncludingGravity;
-					var z = acceleration.z;
-					// Modulación de amplitud con el valor de z del acelerómetro
-					osciladorGain.gain.value =  (z / 2);
-					// Actualizar el valor de z en el elemento HTML
-					document.getElementById("z-value").innerHTML = "z: " + z.toFixed(2);
-				});
-				
-				// Crear nodo de ganancia para modulación de amplitud
-				var osciladorGain = context.createGain();
-				osciladorGain.gain.value = 0.9;
-				oscilador.connect(osciladorGain);
-				osciladorGain.connect(context.destination);
-				
-				oscilador.start();
-				playing = true;
-				document.getElementById("onoff").innerHTML = "Apagar Sonido";
-			}
-		}
-
-		document.addEventListener("DOMContentLoaded", function(event) {
-			var barra = document.getElementById("barra");
-			var boton = document.getElementById("boton");
-			var ancho = barra.offsetWidth - boton.offsetWidth;
-			var frecuencia = 200;
-
-			barra.addEventListener("touchstart", function(event) {
-				event.preventDefault();
-				var touch = event.touches[0];
-				if (touch.target == boton) {
-					boton.offsetX = touch.clientX - boton.offsetLeft;
-				}
-			});
-
-			barra.addEventListener("touchmove", function(event) {
-				event.preventDefault();
-				var touch = event.touches[0];
-				var x = touch.clientX - barra.offsetLeft - boton.offsetX;
-				if (x < 0) {
-					x = 0;
-				} else if (x > ancho) {
-					x = ancho;
-				}
-				boton.style.left = x + "px";
-				var posicion = x / ancho;
-				frecuencia = 200 + Math.round(posicion * 500);
-				oscilador.frequency.value = frecuencia;
-			});
-		});
-	</script>
+	<button id="play-button">Reproducir</button>
+	<button id="stop-button">Detener</button>
+	<script src="script.js"></script>
 </body>
+</html>
+body {
+	margin: 0;
+	padding: 0;
+	background-color: #F4F4F4;
+	font-family: Arial, sans-serif;
+	text-align: center;
+}
+h1 {
+	margin-top: 20px;
+}
+#meter-container {
+	margin-top: 50px;
+	position: relative;
+	width: 100%;
+	height: 50px;
+	background-color: #FFFFFF;
+	box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.5);
+}
+#meter {
+	position: absolute;
+	top: 0;
+	left: 0;
+	height: 100%;
+	background-color: #9BC53D;
+}
+button {
+	margin-top: 20px;
+	padding: 10px 20px;
+	background-color: #3D8EB9;
+	color: #FFFFFF;
+	border: none;
+	border-radius: 5px;
+	font-size: 16px;
+	cursor: pointer;
+}
+// Se obtiene el objeto del acelerómetro del dispositivo
+var accelerometer = window.DeviceMotionEvent;
+
+// Se define la frecuencia del tono (en Hz)
+var toneFrequency = 300;
+
+// Se define el contexto de audio
+var audioContext = new (window.AudioContext || window.webkitAudioContext)();
+
+// Se define el oscilador que generará el tono
+var oscillator = null;
+
+// Se define la ganancia que modifica la intensidad del sonido
+var gainNode = audioContext.createGain();
+
+// Se obtienen los elementos de la página
+var meter = document.getElementById("meter");
+var playButton = document.getElementById("play-button");
+var stopButton = document.getElementById("stop-button");
+
+// Se define la función que se encarga de generar el tono
+function generateTone(z) {
+	// Se calcula la intensidad del sonido a partir de la componente Z del acelerómetro
+	var intensity = Math.abs(z) / 10;
+
+	// Se modifica la ganancia del sonido de acuerdo a la intensidad calculada
+	gainNode.gain.value = intensity;
+
+	// Se crea el oscilador si no existe y se le asigna la frecuencia del tono
+	if (oscillator === null) {
+		oscillator = audioContext.createOscillator();
+		oscillator.type = "sine";
+		oscillator.frequency.value = toneFrequency;
+		oscillator.connect(gainNode);
+		gainNode.connect(audioContext.destination);
+	}
+
+	// Se inicia el oscilador si no está sonando
+	if (oscillator.state === "suspended") {
+		oscillator.start();
+	}
+
+	// Se actualiza la posición del medidor de intensidad
+	var meterWidth = Math.round(intensity * 100);
+	meter.style.width = meterWidth + "%";
+}
+
+// Se define la función que se encarga de detener el tono
+function stopTone() {
+	if (oscillator !== null) {
+		oscillator.stop();
+		oscillator.disconnect();
+		oscillator = null;
+		gainNode.disconnect();
+		gainNode = audioContext.createGain();
+		meter.style.width = "0%";
+	}
+}
+
+// Se agrega un escucha de eventos al botón de reproducir
+playButton.addEventListener("click", function() {
+	// Se verifica si el acelerómetro está disponible
+	if (accelerometer) {
+		// Se agrega un escucha de eventos al evento de cambio de datos del acelerómetro
+		window.addEventListener("devicemotion", function(event) {
+			// Se obtiene el valor de la componente Z del acelerómetro
+			var z = event.accelerationIncludingGravity.z;
+
+			// Se genera el tono con la intensidad correspondiente a la componente Z
+			generateTone(z);
+		});
+	}
+
+	// Se deshabilita el botón de reproducir y se habilita el de detener
+	playButton.disabled = true;
+	stopButton.disabled = false;
+});
+
+// Se agrega un escucha de eventos al botón de detener
+stopButton.addEventListener("click", function() {
+	// Se detiene el tono
+	stopTone();
+
+	// Se habilita el botón de reproducir y se deshabilita el de detener
+	playButton.disabled = false;
+	stopButton.disabled = true;
+});
+</body>
+</html>
