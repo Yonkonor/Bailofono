@@ -89,7 +89,7 @@
 					var acceleration = event.accelerationIncludingGravity;
 					var z = acceleration.z;
 					// Modulación de amplitud con el valor de z del acelerómetro
-					osciladorGain.gain.value =  (z / 2);
+					osciladorGain.gain.value = Math.abs(z);
 					// Actualizar el valor de z en el elemento HTML
 					document.getElementById("z-value").innerHTML = "z: " + z.toFixed(2);
 				});
