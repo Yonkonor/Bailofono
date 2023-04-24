@@ -96,10 +96,24 @@
 				
 				// Crear nodo de ganancia para modulación de amplitud
 				var osciladorGain = context.createGain();
-				osciladorGain.gain.value = 0.9;
+			
 				oscilador.connect(osciladorGain);
 				osciladorGain.connect(context.destination);
-				
+				var max_z = 0;
+                                window.addEventListener("devicemotion", function(event) {
+                                var acceleration = event.accelerationIncludingGravity;
+                                var z = acceleration.z;
+                                // Actualizar max_z si z es mayor que max_z
+                                if (z > max_z) {
+                                max_z = z;
+                               }
+                               // Configurar la ganancia en función de z
+                                osciladorGain.gain.value = z >= 0 ? z : 0;
+                               // Actualizar el valor de z en el elemento HTML
+                               document.getElementById("z-value").innerHTML = "z: " + z.toFixed(2);
+                               osciladorGain.gain.value = max_z >= 0 ? max_z : 0;
+ 
+               });
 				oscilador.start();
 				playing = true;
 				document.getElementById("onoff").innerHTML = "Apagar Sonido";
@@ -121,7 +135,16 @@
 			});
 
 			barra.addEventListener("touchmove", function(event) {
-				event.preventDefault();
+				barra.addEventListener("touchstart", function(event) {
+                         event.preventDefault();
+                         var touch = event.touches[0];
+                         if (touch.target == boton) {
+                         boton.offsetX = touch.clientX - boton.offsetLeft;
+                         }
+                        // Restablecer max_z a cero
+                        max_z = 0;
+                       });
+                       event.preventDefault();
 				var touch = event.touches[0];
 				var x = touch.clientX - barra.offsetLeft - boton.offsetX;
 				if (x < 0) {
