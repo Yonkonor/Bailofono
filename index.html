@@ -82,7 +82,7 @@
 			} else {
 				oscilador = context.createOscillator();
 				oscilador.type = "sine";
-				oscilador.frequency.value = 50;
+				oscilador.frequency.value = 200;
 				
 				// Obtener la componente z del acelerómetro
 				window.addEventListener("devicemotion", function(event) {
@@ -131,7 +131,7 @@
 				}
 				boton.style.left = x + "px";
 				var posicion = x / ancho;
-				frecuencia = 200 + Math.round(posicion * 500);
+				frecuencia = 200 + Math.round(posicion * 2);
 				oscilador.frequency.value = frecuencia;
 			});
 		});
