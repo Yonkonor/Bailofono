@@ -2,18 +2,6 @@
 <html>
 <head>
 	<title>Sintetizador de acorde mayor</title>
-	<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
-</head>
-<body>
-
-	<!-- Botón para encender y apagar el sonido -->
-	<button id="btnOnOff" onclick="toggleSound()">Encender sonido</button>
-
-	<!-- Barra para seleccionar la frecuencia fundamental del acorde -->
-	<input id="barraFrec<!DOCTYPE html>
-<html>
-<head>
-	<title>Sintetizador de acorde mayor</title>
 </head>
 <body>
 
@@ -90,70 +78,5 @@
 
 	</script>
 
-</body>
-</html>
-uencia" type="range" min="1" max="12" step="1" value="1">
-
-	<script>
-
-		// Variables globales
-		var context = new AudioContext();
-		var oscillator;
-		var gainNode;
-		var playing = false;
-
-		// Función para encender y apagar el sonido
-		function toggleSound() {
-			if (playing) {
-				oscillator.stop();
-				playing = false;
-				$("#btnOnOff").html("Encender sonido");
-			} else {
-				oscillator = context.createOscillator();
-				gainNode = context.createGain();
-
-				// Establecer la frecuencia fundamental del acorde
-				var barra = document.getElementById("barraFrecuencia");
-				var frecuencia = Math.pow(2, (barra.value - 1) / 12) * 220;
-				oscillator.frequency.value = frecuencia;
-
-				// Generar los armónicos anterior y posterior
-				var armonicoAnterior = context.createOscillator();
-				armonicoAnterior.frequency.value = frecuencia * (5/6);
-				var armonicoPosterior = context.createOscillator();
-				armonicoPosterior.frequency.value = frecuencia * (7/6);
-
-				// Conectar los nodos de audio
-				oscillator.connect(gainNode);
-				armonicoAnterior.connect(gainNode);
-				armonicoPosterior.connect(gainNode);
-				gainNode.connect(context.destination);
-
-				// Establecer las intensidades relativas de los armónicos
-				gainNode.gain.value = 1/3;
-				armonicoAnterior.connect(gainNode);
-				armonicoAnterior.gain.value = 1/3;
-				armonicoPosterior.connect(gainNode);
-				armonicoPosterior.gain.value = 1/3;
-
-				// Iniciar los osciladores
-				oscillator.start();
-				armonicoAnterior.start();
-				armonicoPosterior.start();
-
-				playing = true;
-				$("#btnOnOff").html("Apagar sonido");
-			}
-		}
-
-		// Actualizar la frecuencia fundamental del acorde cuando se mueve la barra
-		$("#barraFrecuencia").on("input", function() {
-			var frecuencia = Math.pow(2, (this.value - 1) / 12) * 220;
-			oscillator.frequency.value = frecuencia;
-			armonicoAnterior.frequency.value = frecuencia * (5/6);
-			armonicoPosterior.frequency.value = frecuencia * (7/6);
-	});
-
-</script>
 </body>
 </html>
