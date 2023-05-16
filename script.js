@@ -35,7 +35,7 @@ document.addEventListener("DOMContentLoaded", function() {
       x = containerWidth - buttonSize;
     }
 
-    button.style.left = x + "px";
+    button.style.left = x - 100 + "px";
 
     var normalizedX = x / (containerWidth - buttonSize);
     var XA = normalizedX * normalizedX;
