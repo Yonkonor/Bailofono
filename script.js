@@ -1,6 +1,7 @@
 document.addEventListener("DOMContentLoaded", function() {
   var button = document.getElementById("button");
   var valueBox = document.getElementById("valueBox");
+  var audioContext = new (window.AudioContext || window.webkitAudioContext)();
 
   var containerWidth = 700;
   var buttonSize = 70;
@@ -38,9 +39,24 @@ document.addEventListener("DOMContentLoaded", function() {
     button.style.left = x + "px";
 
     var normalizedX = x / (containerWidth - buttonSize);
-    var XA = normalizedX * normalizedX;
+    var frequency = normalizedX * 1000 + 200; // Ajusta la fórmula para obtener la frecuencia deseada
 
-    valueBox.innerHTML = XA.toFixed(2);
+    valueBox.innerHTML = frequency.toFixed(2) + " Hz";
+
+    // Generar sonido
+    generateSound(frequency);
+  }
+
+  function generateSound(frequency) {
+    var oscillator = audioContext.createOscillator();
+    oscillator.frequency.value = frequency;
+    oscillator.type = "sine"; // Puedes cambiar el tipo de forma de onda aquí
+
+    oscillator.connect(audioContext.destination);
+    oscillator.start();
+    setTimeout(function() {
+      oscillator.stop();
+    }, 100); // Duración del sonido en milisegundos
   }
 
   function stopMovingButton(event) {
@@ -59,4 +75,3 @@ document.addEventListener("DOMContentLoaded", function() {
     valueBox.style.display = "block";
   }
 });
-
