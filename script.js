@@ -2,12 +2,14 @@ document.addEventListener("DOMContentLoaded", function() {
   var button = document.getElementById("button");
   var valueBox = document.getElementById("valueBox");
   var audioContext = new (window.AudioContext || window.webkitAudioContext)();
+  var startButton = document.getElementById("startButton");
 
   var containerWidth = 700;
   var buttonSize = 70;
 
   button.addEventListener("mousedown", startMovingButton);
   button.addEventListener("touchstart", startMovingButton);
+  startButton.addEventListener("click", startSound);
 
   function startMovingButton(event) {
     event.preventDefault();
@@ -22,56 +24,36 @@ document.addEventListener("DOMContentLoaded", function() {
   }
 
   function moveButton(event) {
-    var x;
+    // Código para mover el botón
+  }
 
-    if (event.type === "mousemove") {
-      x = event.pageX - buttonSize / 2;
-    } else if (event.type === "touchmove") {
-      x = event.touches[0].pageX - buttonSize / 2;
-    }
+  function stopMovingButton(event) {
+    // Código para detener el movimiento del botón
+  }
 
-    if (x < 0) {
-      x = 0;
-    } else if (x > containerWidth - buttonSize) {
-      x = containerWidth - buttonSize;
-    }
+  function showValueBox() {
+    // Código para mostrar el valueBox
+  }
 
-    button.style.left = x + "px";
-
+  function startSound() {
+    var x = parseInt(button.style.left, 10) || 0;
     var normalizedX = x / (containerWidth - buttonSize);
-    var frequency = normalizedX * 1000 + 200; // Ajusta la fórmula para obtener la frecuencia deseada
+    var frequency = normalizedX * 1000 + 200;
 
     valueBox.innerHTML = frequency.toFixed(2) + " Hz";
 
-    // Generar sonido
     generateSound(frequency);
   }
 
   function generateSound(frequency) {
     var oscillator = audioContext.createOscillator();
     oscillator.frequency.value = frequency;
-    oscillator.type = "sine"; // Puedes cambiar el tipo de forma de onda aquí
+    oscillator.type = "sine";
 
     oscillator.connect(audioContext.destination);
     oscillator.start();
     setTimeout(function() {
       oscillator.stop();
-    }, 100); // Duración del sonido en milisegundos
-  }
-
-  function stopMovingButton(event) {
-    if (event.type === "mouseup") {
-      document.removeEventListener("mousemove", moveButton);
-      document.removeEventListener("mouseup", stopMovingButton);
-    } else if (event.type === "touchend") {
-      document.removeEventListener("touchmove", moveButton);
-      document.removeEventListener("touchend", stopMovingButton);
-    }
-
-    showValueBox();
-  }
-
-  function showValueBox() {
-    valueBox.style.display = "block";
+    }, 100);
   }
 });
