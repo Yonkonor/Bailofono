@@ -71,7 +71,7 @@
     }
 
     // Evento para controlar el desplazamiento del botón en la corredera
-    sliderButton.addEventListener('touchmove', function(event) {
+    function handleTouchMove(event) {
       event.preventDefault();
       let touch = event.touches[0];
       let newPosition = touch.clientX - buttonWidth / 2;
@@ -80,13 +80,17 @@
         updateSliderPosition();
         updateSoundIntensity();
       }
-    });
+    }
 
     // Evento para iniciar el sonido
-    sliderButton.addEventListener('touchstart', function() {
+    function handleTouchStart() {
       // Aquí puedes agregar la lógica para iniciar el sonido
       console.log('Sonido iniciado');
-    });
+    }
+
+    // Agregar los eventos de desplazamiento y inicio del sonido
+    sliderButton.addEventListener('touchmove', handleTouchMove);
+    sliderButton.addEventListener('touchstart', handleTouchStart);
   </script>
 </body>
 </html>
