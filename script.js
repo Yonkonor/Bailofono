@@ -1,50 +1,37 @@
-let buttonWidth = sliderButton.offsetWidth;
-let maxX = sliderWidth - buttonWidth;
+// app.js
+document.addEventListener('DOMContentLoaded', () => {
+    const audioContext = new (window.AudioContext || window.webkitAudioContext)();
+    const oscillator = audioContext.createOscillator();
+    const gainNode = audioContext.createGain();
+    const accelerometerOptions = { frequency: 10 }; // Actualiza cada 10ms
 
-// Variables para controlar el sonido
-let f = 880;
-let imax = 1;
-let vt = 0;
+    let frequencySlider = document.getElementById('frequencySlider');
+    
+    // Inicializa el oscilador y el nodo de ganancia
+    oscillator.type = 'sine'; // Puedes cambiar a otros tipos de onda (square, sawtooth, triangle)
+    oscillator.connect(gainNode);
+    gainNode.connect(audioContext.destination);
+    oscillator.start();
 
-// Actualizar el valor de X y la posición del botón en la corredera
-function updateSliderPosition() {
-  x = sliderButton.offsetLeft / maxX;
-  f = 880 + x * (1660 - 880);
-}
+    // Función para cambiar la frecuencia
+    function changeFrequency() {
+        oscillator.frequency.setValueAtTime(frequencySlider.value, audioContext.currentTime);
+    }
 
-// Actualizar la intensidad del sonido
-function updateSoundIntensity() {
-  let i = (Math.abs(vt) / imax) * 100;
-  // Aplicar intensidades relativas para los armónicos
-  let harmonic1 = i * 0.5;
-  let harmonic2 = i * 0.3;
-  let harmonic3 = i * 0.1;
-  
-  // Aquí puedes utilizar los valores de intensidad para generar el sonido
-  console.log('Intensidad:', i);
-  console.log('Armónico 1:', harmonic1);
-  console.log('Armónico 2:', harmonic2);
-  console.log('Armónico 3:', harmonic3);
-}
+    // Función para ajustar la intensidad basada en la aceleración
+    function handleAcceleration(event) {
+        let acceleration = event.accelerationIncludingGravity;
+        let intensity = Math.sqrt(acceleration.x**2 + acceleration.y**2 + acceleration.z**2) / 9.8;
+        gainNode.gain.value = intensity;
+    }
 
-// Evento para controlar el desplazamiento del botón en la corredera
-function handleTouchMove(event) {
-  event.preventDefault();
-  let touch = event.touches[0];
-  let newPosition = touch.clientX - buttonWidth / 2;
-  if (newPosition >= 0 && newPosition <= maxX) {
-    sliderButton.style.left = newPosition + 'px';
-    updateSliderPosition();
-    updateSoundIntensity();
-  }
-}
+    // Configura el control deslizable de frecuencia
+    frequencySlider.addEventListener('input', changeFrequency);
 
-// Evento para iniciar el sonido
-function handleTouchStart() {
-  // Aquí puedes agregar la lógica para iniciar el sonido
-  console.log('Sonido iniciado');
-}
-
-// Agregar los eventos de desplazamiento y inicio del sonido
-sliderButton.addEventListener('touchmove', handleTouchMove);
-sliderButton.addEventListener('touchstart', handleTouchStart);
+    // Configura el acelerómetro
+    if (window.DeviceMotionEvent) {
+        window.addEventListener('devicemotion', handleAcceleration, accelerometerOptions);
+    } else {
+        console.log('El dispositivo no es compatible con el acelerómetro.');
+    }
+});
